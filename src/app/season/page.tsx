@@ -47,7 +47,7 @@ export default function SeasonPage() {
       <div className="min-h-screen flex items-center justify-center p-6">
         <Card size="md" padding="lg" className="text-center">
           <div className="text-6xl mb-4 animate-pulse">🏆</div>
-          <p className="font-mono text-sm">Carregando season...</p>
+          <p className="font-mono text-sm">Loading season...</p>
         </Card>
       </div>
     );
@@ -69,7 +69,7 @@ export default function SeasonPage() {
 
           <div className="relative text-center">
             <div className="inline-block mb-4 px-4 py-1 border-2 border-black bg-yellow-400 font-black text-xs uppercase">
-              TEMPORADA {currentSeason.number}
+              SEASON {currentSeason.number}
             </div>
 
             <h1 className="text-4xl lg:text-5xl font-black uppercase mb-4">
@@ -77,18 +77,18 @@ export default function SeasonPage() {
             </h1>
 
             <p className="font-mono text-sm mb-8 max-w-xl mx-auto opacity-70">
-              {currentSeason.metadata?.description || 'Uma nova temporada com novos desafios e recompensas!'}
+              {currentSeason.metadata?.description || 'A new season with new challenges and rewards!'}
             </p>
 
             {/* Progress */}
             <div className="max-w-md mx-auto">
               <div className="flex justify-between font-mono text-[10px] mb-2 opacity-50">
-                <span>{new Date(currentSeason.startAt).toLocaleDateString('pt-BR')}</span>
+                <span>{new Date(currentSeason.startAt).toLocaleDateString('en-US')}</span>
                 <span>{currentSeason.progress}%</span>
-                <span>{new Date(currentSeason.endAt).toLocaleDateString('pt-BR')}</span>
+                <span>{new Date(currentSeason.endAt).toLocaleDateString('en-US')}</span>
               </div>
               <div className="h-3 border-2 border-black bg-white p-[2px] shadow-[2px_2px_0px_rgba(0,0,0,1)]">
-                <div 
+                <div
                   className="h-full bg-black transition-all duration-500"
                   style={{ width: `${currentSeason.progress}%` }}
                 />
@@ -102,7 +102,7 @@ export default function SeasonPage() {
           <div>
             <h2 className="text-2xl font-black uppercase italic border-b-4 border-black pb-2 mb-6 flex items-center gap-3">
               <Trophy size={24} />
-              Ranking da Season
+              Season Ranking
             </h2>
 
             <div className="space-y-4">
@@ -111,9 +111,9 @@ export default function SeasonPage() {
                 const isTop3 = entry.position <= 3;
 
                 return (
-                  <Card 
-                    key={entry.tribe} 
-                    size="sm" 
+                  <Card
+                    key={entry.tribe}
+                    size="sm"
                     padding="md"
                     className={entry.position === 1 ? 'bg-yellow-50 border-yellow-500' : ''}
                   >
@@ -121,8 +121,8 @@ export default function SeasonPage() {
                       {/* Position */}
                       <div className={`
                         w-10 h-10 border-2 border-black flex items-center justify-center font-black
-                        ${entry.position === 1 ? 'bg-yellow-400' : 
-                          entry.position === 2 ? 'bg-zinc-300' : 
+                        ${entry.position === 1 ? 'bg-yellow-400' :
+                          entry.position === 2 ? 'bg-zinc-300' :
                           entry.position === 3 ? 'bg-orange-400' : 'bg-white'}
                       `}>
                         {entry.position}
@@ -134,7 +134,7 @@ export default function SeasonPage() {
                         <div>
                           <span className="font-black uppercase block">{tribe?.name}</span>
                           <span className="font-mono text-[10px] opacity-50">
-                            {entry.weekWins} vitórias semanais
+                            {entry.weekWins} weekly wins
                           </span>
                         </div>
                       </div>
@@ -157,15 +157,15 @@ export default function SeasonPage() {
             <div>
               <h2 className="text-2xl font-black uppercase italic border-b-4 border-black pb-2 mb-6 flex items-center gap-3">
                 <Gift size={24} />
-                Recompensas
+                Rewards
               </h2>
 
               <div className="space-y-3">
                 {[
-                  { position: '🥇 1º Lugar', reward: 'Badge Exclusiva + Forma Mítica' },
-                  { position: '🥈 2º Lugar', reward: 'Badge Prata + Cosmético Especial' },
-                  { position: '🥉 3º Lugar', reward: 'Badge Bronze + Título Único' },
-                  { position: '📊 Participantes', reward: 'XP Bônus + Badge de Season' },
+                  { position: '🥇 1st Place', reward: 'Exclusive Badge + Mythic Form' },
+                  { position: '🥈 2nd Place', reward: 'Silver Badge + Special Cosmetic' },
+                  { position: '🥉 3rd Place', reward: 'Bronze Badge + Unique Title' },
+                  { position: '📊 Participants', reward: 'Bonus XP + Season Badge' },
                 ].map((item) => (
                   <Card key={item.position} size="sm" padding="sm">
                     <div className="flex items-center gap-3">
@@ -184,13 +184,13 @@ export default function SeasonPage() {
             <Card padding="md">
               <h3 className="font-black uppercase text-sm mb-4 border-b-2 border-black pb-2 flex items-center gap-2">
                 <Target size={16} />
-                Como funciona
+                How it works
               </h3>
               <div className="space-y-2 font-mono text-[10px] opacity-70">
-                <p>📅 Cada season dura aproximadamente 1 mês</p>
-                <p>⚔️ Vitórias semanais acumulam pontos para a tribo</p>
-                <p>🏆 Ao final, a tribo com mais pontos vence</p>
-                <p>🎁 Participantes ativos recebem recompensas</p>
+                <p>📅 Each season lasts approximately 1 month</p>
+                <p>⚔️ Weekly wins accumulate points for the tribe</p>
+                <p>🏆 At the end, the tribe with the most points wins</p>
+                <p>🎁 Active participants receive rewards</p>
               </div>
             </Card>
           </div>

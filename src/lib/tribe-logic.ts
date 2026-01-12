@@ -14,7 +14,7 @@ export interface TribeWeekScore {
 }
 
 export async function computeWeekScores(weekStart: Date, weekEnd: Date): Promise<TribeWeekScore[]> {
-  const tribes: Tribe[] = ['FOFO', 'CAOS', 'CHAD', 'CRINGE'];
+  const tribes: Tribe[] = ['FOFO', 'CAOS', 'CHAD', 'DEGEN'];
   const scores: TribeWeekScore[] = [];
 
   for (const tribe of tribes) {
@@ -207,7 +207,7 @@ export interface LeaderboardEntry {
 }
 
 export async function getWeekLeaderboard(weekId?: string): Promise<LeaderboardEntry[]> {
-  let week;
+  let week: Awaited<ReturnType<typeof getOrCreateCurrentWeek>> | null = null;
 
   if (weekId) {
     week = await prisma.week.findUnique({
@@ -220,6 +220,7 @@ export async function getWeekLeaderboard(weekId?: string): Promise<LeaderboardEn
 
   if (!week) return [];
 
+  const winnerTribe = week.winnerTribe;
   const entries: LeaderboardEntry[] = week.scores
     .sort((a, b) => b.total - a.total)
     .map((score, index) => ({
@@ -227,7 +228,7 @@ export async function getWeekLeaderboard(weekId?: string): Promise<LeaderboardEn
       tribeInfo: TRIBES[score.tribe as keyof typeof TRIBES],
       total: score.total,
       position: index + 1,
-      isWinner: week.winnerTribe === score.tribe,
+      isWinner: winnerTribe === score.tribe,
     }));
 
   // Se não há scores ainda, retornar todas as tribos com 0
@@ -313,7 +314,7 @@ export async function finalizeSeason(seasonId: string): Promise<Tribe | null> {
     FOFO: 0,
     CAOS: 0,
     CHAD: 0,
-    CRINGE: 0,
+    DEGEN: 0,
   };
 
   for (const week of weeks) {

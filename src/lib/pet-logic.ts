@@ -58,31 +58,37 @@ export async function performAction(petId: string, actionType: ActionType): Prom
   const pet = await prisma.pet.findUnique({ where: { id: petId } });
 
   if (!pet) {
-    return { success: false, error: 'Pet não encontrado' };
+    return { success: false, error: 'Pet not found' };
   }
 
   const action = ACTIONS[actionType];
   const now = new Date();
 
-  // Verificar cooldown
+  // Verificar cooldown (skip for actions that were never performed)
   const lastActionField = `last${actionType.charAt(0).toUpperCase() + actionType.slice(1)}At` as
     | 'lastFeedAt'
     | 'lastPlayAt'
     | 'lastSleepAt'
     | 'lastSocializeAt';
   const lastActionTime = new Date(pet[lastActionField]);
-  const cooldownEndsAt = new Date(lastActionTime.getTime() + action.cooldownMinutes * 60 * 1000);
+  const createdAt = new Date(pet.createdAt);
 
-  if (now < cooldownEndsAt) {
-    return { success: false, error: 'Ação em cooldown', cooldownEndsAt };
+  // Check if this specific action was never performed (timestamp matches creation time)
+  const neverPerformedThisAction = Math.abs(lastActionTime.getTime() - createdAt.getTime()) < 1000;
+
+  if (!neverPerformedThisAction) {
+    const cooldownEndsAt = new Date(lastActionTime.getTime() + action.cooldownMinutes * 60 * 1000);
+    if (now < cooldownEndsAt) {
+      return { success: false, error: 'Action on cooldown', cooldownEndsAt };
+    }
   }
 
   // Calcular stats atuais
   const currentStats = computeDecayedStats(pet);
 
-  // Verificar energia para ações que custam energia
+  // Check energy for actions that cost energy
   if (action.energyCost > 0 && currentStats.energy < action.energyCost) {
-    return { success: false, error: 'Energia insuficiente' };
+    return { success: false, error: 'Insufficient energy' };
   }
 
   // Aplicar mudanças
@@ -165,32 +171,40 @@ interface EvolutionResult {
 async function checkEvolution(pet: Pet): Promise<EvolutionResult> {
   const stats = computeDecayedStats(pet);
 
-  // Condições de evolução baseadas em stage atual
+  // Evolution conditions based on current stage (Fast progression!)
   const evolutions: Record<Stage, { nextStage: Stage; condition: () => boolean }> = {
     EGG: {
       nextStage: 'BABY',
-      condition: () => pet.totalActions >= 5,
+      condition: () => pet.totalActions >= 1, // Instant hatching: 1 action
     },
     BABY: {
       nextStage: 'TEEN',
-      condition: () => pet.totalActions >= 20 && pet.careStreak >= 3,
+      condition: () => pet.totalActions >= 5 && pet.careStreak >= 1, // Was 20/3 - now 5 actions, 1 streak
     },
     TEEN: {
       nextStage: 'ADULT',
-      condition: () => pet.totalActions >= 50 && pet.careStreak >= 7 && stats.reputation >= 20,
+      condition: () => pet.totalActions >= 15 && pet.careStreak >= 2 && stats.reputation >= 10, // Was 50/7/20 - now 15/2/10
     },
     ADULT: {
       nextStage: 'LEGENDARY',
-      condition: () => pet.totalActions >= 100 && pet.careStreak >= 14 && stats.reputation >= 50,
+      condition: () => pet.totalActions >= 30 && pet.careStreak >= 3 && stats.reputation >= 30, // Was 100/14/50 - now 30/3/30
     },
     LEGENDARY: {
-      nextStage: 'LEGENDARY', // Não evolui mais
+      nextStage: 'LEGENDARY', // Max level
       condition: () => false,
     },
   };
 
   const currentStage = pet.stage as Stage;
   const evolution = evolutions[currentStage];
+
+  console.log('[Evolution Check]', {
+    petId: pet.id,
+    currentStage,
+    totalActions: pet.totalActions,
+    tribe: pet.tribe,
+    conditionMet: evolution.condition(),
+  });
 
   if (evolution.condition()) {
     // Encontrar nova forma
@@ -323,7 +337,7 @@ export async function createPet(
   const existingPet = await prisma.pet.findUnique({ where: { userId } });
 
   if (existingPet) {
-    return { error: 'Você já tem um pet' };
+    return { error: 'You already have a pet' };
   }
 
   const eggSeed = Math.floor(Math.random() * 1000000);

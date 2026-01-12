@@ -4,15 +4,19 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/components/providers/AuthProvider';
-import { PetSprite } from '@/components/pet/PetSprite';
+import { Pet3D } from '@/components/pet/Pet3D';
 import { PetStats } from '@/components/pet/PetStats';
 import { PetActions } from '@/components/pet/PetActions';
+import { TokenFeeding } from '@/components/pet/TokenFeeding';
+import { PetSkills } from '@/components/pet/PetSkills';
 import { TribeCard } from '@/components/tribe/TribeCard';
 import { Leaderboard } from '@/components/tribe/Leaderboard';
+import { TribeChat } from '@/components/social/TribeChat';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Terminal } from '@/components/ui/Terminal';
 import { TRIBES, PET_FORMS, Tribe } from '@/lib/constants';
+import { PetState } from '@/lib/pet-system-3d';
 import { AlertTriangle, Crown } from 'lucide-react';
 
 interface PetData {
@@ -31,9 +35,10 @@ interface PetData {
     reputation: number;
     isNeglected: boolean;
   };
+  cooldowns?: Record<string, string | null>;
 }
 
-const STAGES = ['Ovo', 'Bebê', 'Adolescente', 'Adulto', 'Lendário', 'Mítico'];
+const STAGES = ['Egg', 'Baby', 'Teen', 'Adult', 'Legendary', 'Mythic'];
 
 export default function AppPage() {
   const router = useRouter();
@@ -41,14 +46,20 @@ export default function AppPage() {
   const [pet, setPet] = useState<PetData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [logs, setLogs] = useState<string[]>(['Sistema inicializado...']);
+  const [logs, setLogs] = useState<string[]>(['System initialized...']);
   const [leaderboard, setLeaderboard] = useState<any[]>([]);
 
-  // Estado para criação
+  // State for creation
   const [newPetName, setNewPetName] = useState('');
   const [selectedTribe, setSelectedTribe] = useState<Tribe | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
+
+  // State for 3D pet animation
+  const [petState, setPetState] = useState<PetState>('idle');
+
+  // State for staking/power
+  const [currentPower, setCurrentPower] = useState(0);
 
   const addLog = (msg: string) => {
     setLogs(prev => [msg, ...prev].slice(0, 5));
@@ -61,14 +72,14 @@ export default function AppPage() {
 
       if (data.success) {
         setPet(data.data);
-        addLog('Dados do pet sincronizados.');
+        addLog('Pet data synchronized.');
       } else if (res.status === 404) {
         setPet(null);
       } else {
         setError(data.error);
       }
     } catch {
-      setError('Erro de conexão');
+      setError('Connection error');
     } finally {
       setIsLoading(false);
     }
@@ -86,6 +97,18 @@ export default function AppPage() {
     }
   }, []);
 
+  const fetchPower = useCallback(async () => {
+    try {
+      const res = await fetch('/api/staking/status');
+      const data = await res.json();
+      if (data.success) {
+        setCurrentPower(data.data.stake?.power || 0);
+      }
+    } catch {
+      // Ignore
+    }
+  }, []);
+
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
       router.push('/');
@@ -94,12 +117,13 @@ export default function AppPage() {
     if (isAuthenticated) {
       fetchPet();
       fetchLeaderboard();
+      fetchPower();
     }
-  }, [isAuthenticated, authLoading, router, fetchPet, fetchLeaderboard]);
+  }, [isAuthenticated, authLoading, router, fetchPet, fetchLeaderboard, fetchPower]);
 
   const handleCreatePet = async () => {
     if (!newPetName.trim() || !selectedTribe) {
-      setCreateError('Preencha o nome e escolha uma tribo');
+      setCreateError('Fill in the name and choose a tribe');
       return;
     }
 
@@ -119,14 +143,14 @@ export default function AppPage() {
       const data = await res.json();
 
       if (data.success) {
-        addLog(`Pet "${newPetName}" criado com sucesso!`);
+        addLog(`Pet "${newPetName}" created successfully!`);
         await refreshUser();
         await fetchPet();
       } else {
         setCreateError(data.error);
       }
     } catch {
-      setCreateError('Erro de conexão');
+      setCreateError('Connection error');
     } finally {
       setIsCreating(false);
     }
@@ -134,7 +158,22 @@ export default function AppPage() {
 
   const handleActionComplete = () => {
     fetchPet();
-    addLog('Ação executada com sucesso.');
+    fetchPower(); // Refresh power after token feeding
+    addLog('Action executed successfully.');
+    // Reset animation after a delay
+    setTimeout(() => setPetState('idle'), 3000);
+  };
+
+  const handleActionStart = (action: string) => {
+    // Map action to 3D animation state
+    const actionToState: Record<string, PetState> = {
+      feed: 'eat',
+      play: 'happy',
+      sleep: 'sleep',
+      socialize: 'happy',
+    };
+    setPetState(actionToState[action] || 'idle');
+    addLog(`Executing ${action}...`);
   };
 
   if (authLoading || isLoading) {
@@ -142,7 +181,7 @@ export default function AppPage() {
       <div className="min-h-screen flex items-center justify-center p-6">
         <Card size="md" padding="lg" className="text-center">
           <div className="text-6xl mb-4 animate-pulse">🥚</div>
-          <p className="font-mono text-sm">Inicializando protocolo...</p>
+          <p className="font-mono text-sm">Initializing protocol...</p>
         </Card>
       </div>
     );
@@ -153,39 +192,39 @@ export default function AppPage() {
       <div className="min-h-screen flex items-center justify-center p-6">
         <Card size="md" padding="lg" className="text-center max-w-md">
           <div className="text-6xl mb-4">⚠️</div>
-          <h2 className="font-black text-xl uppercase mb-2">ERRO</h2>
+          <h2 className="font-black text-xl uppercase mb-2">ERROR</h2>
           <p className="font-mono text-sm mb-6">{error}</p>
-          <Button onClick={fetchPet}>TENTAR NOVAMENTE</Button>
+          <Button onClick={fetchPet}>TRY AGAIN</Button>
         </Card>
       </div>
     );
   }
 
-  // Tela de criação de pet
+  // Pet creation screen
   if (!pet) {
     return (
       <div className="min-h-screen p-4 flex items-center justify-center">
         <div className="max-w-4xl w-full">
           <h2 className="text-4xl font-black mb-8 uppercase italic underline decoration-4">
-            Escolha sua linhagem:
+            Choose your lineage:
           </h2>
 
           {createError && (
             <Card size="sm" padding="sm" className="mb-6 bg-red-100 border-red-600">
-              <p className="font-mono text-sm text-red-800">{`> ERRO: ${createError}`}</p>
+              <p className="font-mono text-sm text-red-800">{`> ERROR: ${createError}`}</p>
             </Card>
           )}
 
-          {/* Nome */}
+          {/* Name */}
           <Card padding="md" className="mb-6">
             <label className="block font-black text-xs uppercase tracking-widest mb-2">
-              Nome do Pet
+              Pet Name
             </label>
             <input
               type="text"
               value={newPetName}
               onChange={(e) => setNewPetName(e.target.value)}
-              placeholder="Digite o nome..."
+              placeholder="Type the name..."
               maxLength={20}
               className="brutal-input"
             />
@@ -194,7 +233,7 @@ export default function AppPage() {
             </p>
           </Card>
 
-          {/* Tribos */}
+          {/* Tribes */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             {Object.entries(TRIBES).map(([key]) => (
               <TribeCard
@@ -207,7 +246,7 @@ export default function AppPage() {
             ))}
           </div>
 
-          {/* Criar */}
+          {/* Create */}
           <div className="text-center">
             <Button
               variant="primary"
@@ -215,7 +254,7 @@ export default function AppPage() {
               onClick={handleCreatePet}
               disabled={!newPetName.trim() || !selectedTribe || isCreating}
             >
-              {isCreating ? 'CRIANDO...' : '🥚 CHOCAR MEU PET'}
+              {isCreating ? 'CREATING...' : '🥚 HATCH MY PET'}
             </Button>
           </div>
         </div>
@@ -223,7 +262,7 @@ export default function AppPage() {
     );
   }
 
-  // Dashboard do pet - Layout 3-6-3
+  // Pet dashboard - Layout 3-6-3
   const tribeInfo = TRIBES[pet.tribe as keyof typeof TRIBES];
   const form = PET_FORMS.find((f) => f.id === pet.formId);
   const stageIndex = ['EGG', 'BABY', 'TEEN', 'ADULT', 'LEGENDARY'].indexOf(pet.stage);
@@ -232,16 +271,16 @@ export default function AppPage() {
     FOFO: 'bg-pink-50',
     CAOS: 'bg-zinc-900',
     CHAD: 'bg-stone-100',
-    CRINGE: 'bg-violet-50',
+    DEGEN: 'bg-violet-50',
   };
 
   return (
     <div className={`min-h-screen ${tribeBg[pet.tribe] || 'bg-[#f0f0f0]'} p-4 md:p-8 transition-colors duration-1000`}>
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6">
-        
-        {/* COLUNA ESQUERDA: PERFIL E STATUS */}
+
+        {/* LEFT COLUMN: PROFILE AND STATUS */}
         <div className="lg:col-span-3 space-y-6">
-          {/* Perfil */}
+          {/* Profile */}
           <Card padding="md">
             <div className="flex items-center gap-3 mb-4">
               <div className={`w-12 h-12 border-2 border-black flex items-center justify-center ${pet.tribe === 'FOFO' ? 'bg-pink-500' : pet.tribe === 'CAOS' ? 'bg-red-600' : pet.tribe === 'CHAD' ? 'bg-emerald-500' : 'bg-violet-500'}`}>
@@ -273,6 +312,9 @@ export default function AppPage() {
             />
           </Card>
 
+          {/* Pet Skills */}
+          <PetSkills compact />
+
           {/* Council Alert */}
           <div className="border-2 border-black p-3 bg-yellow-400 font-black text-xs uppercase flex items-center gap-3 animate-pulse">
             <AlertTriangle size={16} />
@@ -280,24 +322,24 @@ export default function AppPage() {
           </div>
         </div>
 
-        {/* COLUNA CENTRAL: O PET */}
+        {/* CENTER COLUMN: THE PET */}
         <div className="lg:col-span-6 space-y-6">
-          {/* Alerta de negligência */}
+          {/* Neglect alert */}
           {pet.computedStats.isNeglected && (
             <Card padding="sm" className="bg-red-100 border-red-600">
               <div className="flex items-center gap-3">
                 <span className="text-2xl">😢</span>
                 <div>
-                  <h3 className="font-black uppercase text-red-800">MODO VERGONHA!</h3>
+                  <h3 className="font-black uppercase text-red-800">SHAME MODE!</h3>
                   <p className="text-[10px] font-mono text-red-700">
-                    Seu pet foi negligenciado. Execute ações para recuperá-lo!
+                    Your pet was neglected. Perform actions to recover it!
                   </p>
                 </div>
               </div>
             </Card>
           )}
 
-          {/* Display do Pet */}
+          {/* Pet Display */}
           <Card size="lg" padding="md" className="relative overflow-hidden">
             {/* Scanlines */}
             <div className="scanlines" />
@@ -308,11 +350,13 @@ export default function AppPage() {
               <div className="grid-pattern" />
 
               {/* Pet */}
-              <PetSprite
+              <Pet3D
                 tribe={pet.tribe}
                 stage={pet.stage}
                 isNeglected={pet.computedStats.isNeglected}
-                size="xl"
+                isSleeping={petState === 'sleep'}
+                state={petState}
+                size="lg"
               />
 
               {/* Level Ticket */}
@@ -327,26 +371,54 @@ export default function AppPage() {
               </div>
             </div>
 
-            {/* Barra de evolução */}
+            {/* Evolution bar */}
             <div className="mt-4">
-              <div className="flex justify-between items-center mb-2 font-black text-[10px] uppercase">
-                <span>Evolução: {STAGES[stageIndex] || 'Ovo'}</span>
-                <span>XP: {pet.totalActions * 10}/1000</span>
-              </div>
-              <div className="h-2 bg-zinc-200 border border-black overflow-hidden">
-                <div 
-                  className="h-full bg-black transition-all"
-                  style={{ width: `${Math.min(100, (pet.totalActions * 10) / 10)}%` }}
-                />
-              </div>
+              {(() => {
+                // Evolution thresholds: EGG->1, BABY->5, TEEN->15, ADULT->30
+                const thresholds: Record<string, { current: number; next: number; nextStage: string }> = {
+                  EGG: { current: 0, next: 1, nextStage: 'Baby' },
+                  BABY: { current: 1, next: 5, nextStage: 'Teen' },
+                  TEEN: { current: 5, next: 15, nextStage: 'Adult' },
+                  ADULT: { current: 15, next: 30, nextStage: 'Legendary' },
+                  LEGENDARY: { current: 30, next: 30, nextStage: 'MAX' },
+                };
+                const t = thresholds[pet.stage] || thresholds.EGG;
+                const progress = pet.stage === 'LEGENDARY'
+                  ? 100
+                  : Math.min(100, ((pet.totalActions - t.current) / (t.next - t.current)) * 100);
+                return (
+                  <>
+                    <div className="flex justify-between items-center mb-2 font-black text-[10px] uppercase">
+                      <span>Stage: {STAGES[stageIndex] || 'Egg'}</span>
+                      <span>{pet.stage === 'LEGENDARY' ? 'MAX LEVEL!' : `${pet.totalActions}/${t.next} → ${t.nextStage}`}</span>
+                    </div>
+                    <div className="h-2 bg-zinc-200 border border-black overflow-hidden">
+                      <div
+                        className={`h-full transition-all ${pet.stage === 'LEGENDARY' ? 'bg-yellow-500' : 'bg-black'}`}
+                        style={{ width: `${progress}%` }}
+                      />
+                    </div>
+                  </>
+                );
+              })()}
             </div>
           </Card>
 
-          {/* Ações */}
-          <PetActions onActionComplete={handleActionComplete} />
+          {/* Actions */}
+          <PetActions
+            onActionComplete={handleActionComplete}
+            onActionStart={handleActionStart}
+            initialCooldowns={pet.cooldowns}
+          />
+
+          {/* Token Feeding */}
+          <TokenFeeding
+            onFeedComplete={handleActionComplete}
+            currentPower={currentPower}
+          />
         </div>
 
-        {/* COLUNA DIREITA: LOGS E RANKING */}
+        {/* RIGHT COLUMN: LOGS AND RANKING */}
         <div className="lg:col-span-3 space-y-6">
           {/* Terminal Logs */}
           <div className="h-48">
@@ -358,16 +430,19 @@ export default function AppPage() {
             <Leaderboard entries={leaderboard} title="Tribe War Status" showLive />
           )}
 
+          {/* Chat */}
+          <TribeChat tribe={pet.tribe} compact />
+
           {/* Utility buttons */}
           <div className="flex gap-2">
             <Link href={`/pet/${pet.id}`} className="flex-1">
               <Button fullWidth size="sm">
-                PERFIL PÚBLICO
+                PUBLIC PROFILE
               </Button>
             </Link>
             <Link href="/week" className="flex-1">
               <Button fullWidth size="sm">
-                GUERRA →
+                WAR →
               </Button>
             </Link>
           </div>

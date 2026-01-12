@@ -31,7 +31,7 @@ export function PetSprite({
     FOFO: '#f472b6',
     CAOS: '#dc2626',
     CHAD: '#10b981',
-    CRINGE: '#8b5cf6',
+    DEGEN: '#8b5cf6',
   };
 
   const bodyColor = tribeColors[tribe] || '#a3a3a3';
@@ -81,14 +81,14 @@ export function PetSprite({
             strokeWidth="3" 
           />
         );
-      case 'CRINGE':
+      case 'DEGEN':
         // Forma ondulada/estranha
         return (
-          <path 
-            d="M20 50 Q35 20 50 50 T80 50 Q65 80 50 50 T20 50" 
-            fill={bodyColor} 
-            stroke="black" 
-            strokeWidth="3" 
+          <path
+            d="M20 50 Q35 20 50 50 T80 50 Q65 80 50 50 T20 50"
+            fill={bodyColor}
+            stroke="black"
+            strokeWidth="3"
           />
         );
       default:
@@ -178,10 +178,10 @@ export function PetSprite({
         {renderDecorations()}
       </svg>
 
-      {/* Badge de estado */}
+      {/* Status badge */}
       {isNeglected && (
         <div className="absolute -top-2 -right-2 bg-black text-white px-2 py-1 text-[8px] font-mono border-2 border-black">
-          VERGONHA
+          NEGLECTED
         </div>
       )}
 

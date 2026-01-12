@@ -2,8 +2,8 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-// Tipos locais (SQLite não suporta enums)
-type Tribe = 'FOFO' | 'CAOS' | 'CHAD' | 'CRINGE';
+// Local types (SQLite doesn't support enums)
+type Tribe = 'FOFO' | 'CAOS' | 'CHAD' | 'DEGEN';
 type Stage = 'EGG' | 'BABY' | 'TEEN' | 'ADULT' | 'LEGENDARY';
 
 function getWeekBoundaries(date: Date = new Date()): { start: Date; end: Date } {
@@ -29,10 +29,10 @@ function getWeekNumber(date: Date = new Date()): number {
 }
 
 async function main() {
-  console.log('🌱 Iniciando seed do banco de dados...\n');
+  console.log('🌱 Starting database seed...\n');
 
-  // Limpar dados existentes
-  console.log('🧹 Limpando dados existentes...');
+  // Clean existing data
+  console.log('🧹 Cleaning existing data...');
   await prisma.vote.deleteMany();
   await prisma.proposal.deleteMany();
   await prisma.badge.deleteMany();
@@ -47,8 +47,8 @@ async function main() {
   await prisma.nonce.deleteMany();
   await prisma.user.deleteMany();
 
-  // Criar usuários fake
-  console.log('👥 Criando usuários...');
+  // Create fake users
+  console.log('👥 Creating users...');
   const users = await Promise.all(
     Array.from({ length: 20 }, (_, i) => {
       const walletPubkey = `FakeWallet${String(i + 1).padStart(3, '0')}${Math.random().toString(36).substring(2, 10)}`;
@@ -60,17 +60,17 @@ async function main() {
       });
     })
   );
-  console.log(`   ✅ ${users.length} usuários criados`);
+  console.log(`   ✅ ${users.length} users created`);
 
-  // Criar pets (1 por usuário, distribuídos entre tribos)
-  console.log('🐣 Criando pets...');
-  const tribes: Tribe[] = ['FOFO', 'CAOS', 'CHAD', 'CRINGE'];
+  // Create pets (1 per user, distributed among tribes)
+  console.log('🐣 Creating pets...');
+  const tribes: Tribe[] = ['FOFO', 'CAOS', 'CHAD', 'DEGEN'];
   const stages: Stage[] = ['EGG', 'BABY', 'TEEN', 'ADULT'];
   const petNames = [
-    'Fluffster', 'Destroyer', 'Gigachad', 'Cringelord', 'Fofinho',
-    'Caos Jr', 'Sigma', 'Awkward', 'Bolinha', 'Inferno',
-    'Grinder', 'Vergonha', 'Amor', 'Fogo', 'Pedra',
-    'Palhaço', 'Coração', 'Lava', 'Diamante', 'Estrela'
+    'Fluffster', 'Destroyer', 'Gigachad', 'Cringelord', 'Cuddly',
+    'Caos Jr', 'Sigma', 'Awkward', 'Puffball', 'Inferno',
+    'Grinder', 'Cringe', 'Love', 'Fire', 'Stone',
+    'Clown', 'Heart', 'Lava', 'Diamond', 'Star'
   ];
 
   const pets = await Promise.all(
@@ -98,17 +98,17 @@ async function main() {
       });
     })
   );
-  console.log(`   ✅ ${pets.length} pets criados`);
+  console.log(`   ✅ ${pets.length} pets created`);
 
-  // Criar eventos para os pets
-  console.log('📝 Criando eventos...');
+  // Create events for pets
+  console.log('📝 Creating events...');
   let eventCount = 0;
   for (const pet of pets) {
     const numEvents = 3 + Math.floor(Math.random() * 10);
     for (let i = 0; i < numEvents; i++) {
       const eventTypes = ['action', 'evolution', 'created'];
       const type = eventTypes[Math.floor(Math.random() * eventTypes.length)];
-      
+
       await prisma.petEvent.create({
         data: {
           petId: pet.id,
@@ -126,10 +126,10 @@ async function main() {
       eventCount++;
     }
   }
-  console.log(`   ✅ ${eventCount} eventos criados`);
+  console.log(`   ✅ ${eventCount} events created`);
 
-  // Criar visitas
-  console.log('👀 Criando visitas...');
+  // Create visits
+  console.log('👀 Creating visits...');
   let visitCount = 0;
   for (let i = 0; i < 50; i++) {
     const visitor = users[Math.floor(Math.random() * users.length)];
@@ -146,14 +146,14 @@ async function main() {
         });
         visitCount++;
       } catch {
-        // Ignorar duplicatas
+        // Ignore duplicates
       }
     }
   }
-  console.log(`   ✅ ${visitCount} visitas criadas`);
+  console.log(`   ✅ ${visitCount} visits created`);
 
-  // Criar reactions
-  console.log('💬 Criando reactions...');
+  // Create reactions
+  console.log('💬 Creating reactions...');
   const reactionTypes = ['LOVE', 'LOL', 'CRINGE', 'CHAD', 'RIP'] as const;
   let reactionCount = 0;
   for (let i = 0; i < 100; i++) {
@@ -172,10 +172,10 @@ async function main() {
       reactionCount++;
     }
   }
-  console.log(`   ✅ ${reactionCount} reactions criadas`);
+  console.log(`   ✅ ${reactionCount} reactions created`);
 
-  // Criar semana atual
-  console.log('📅 Criando semana atual...');
+  // Create current week
+  console.log('📅 Creating current week...');
   const now = new Date();
   const { start, end } = getWeekBoundaries(now);
   const weekNumber = getWeekNumber(now);
@@ -190,24 +190,24 @@ async function main() {
     },
   });
 
-  // Criar scores iniciais para a semana
+  // Create initial scores for the week (starting at zero for fresh start)
   for (const tribe of tribes) {
     await prisma.tribeScore.create({
       data: {
         weekId: week.id,
         tribe,
-        scoreActivity: Math.floor(Math.random() * 500),
-        scoreSocial: Math.floor(Math.random() * 300),
-        scoreConsistency: Math.floor(Math.random() * 200),
-        scoreEvent: Math.floor(Math.random() * 100),
-        total: Math.floor(Math.random() * 1000),
+        scoreActivity: 0,
+        scoreSocial: 0,
+        scoreConsistency: 0,
+        scoreEvent: 0,
+        total: 0,
       },
     });
   }
-  console.log(`   ✅ Semana ${weekNumber}/${now.getFullYear()} criada com scores`);
+  console.log(`   ✅ Week ${weekNumber}/${now.getFullYear()} created with scores`);
 
-  // Criar temporada atual
-  console.log('🏆 Criando temporada...');
+  // Create current season
+  console.log('🏆 Creating season...');
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
   const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
   const seasonNumber = now.getFullYear() * 100 + (now.getMonth() + 1);
@@ -215,50 +215,50 @@ async function main() {
   await prisma.season.create({
     data: {
       seasonNumber,
-      theme: 'Era do Despertar',
-      description: 'A primeira temporada do SipSip! Todas as tribos lutam para estabelecer dominância.',
+      theme: 'Era of Awakening',
+      description: 'The first SipSip season! All tribes fight to establish dominance.',
       startAt: monthStart,
       endAt: monthEnd,
       isActive: true,
     },
   });
-  console.log(`   ✅ Temporada ${seasonNumber} criada`);
+  console.log(`   ✅ Season ${seasonNumber} created`);
 
-  // Criar propostas do Council
-  console.log('🏛️ Criando propostas do Council...');
+  // Create Council proposals
+  console.log('🏛️ Creating Council proposals...');
   const proposals = await Promise.all([
     prisma.proposal.create({
       data: {
-        title: 'Tema da Próxima Temporada',
-        description: 'Vote no tema que definirá a próxima temporada do SipSip!',
+        title: 'Next Season Theme',
+        description: 'Vote on the theme that will define the next SipSip season!',
         type: 'SEASON_THEME',
         status: 'ACTIVE',
-        options: JSON.stringify(['Era do Caos', 'Reino Fofo', 'Ascensão Chad', 'Festival Cringe']),
+        options: JSON.stringify(['Era of Chaos', 'Cute Kingdom', 'Chad Ascension', 'Cringe Festival']),
         startAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
         endAt: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
       },
     }),
     prisma.proposal.create({
       data: {
-        title: 'Nova Forma de Pet',
-        description: 'Qual forma especial devemos adicionar ao jogo?',
+        title: 'New Pet Form',
+        description: 'What special form should we add to the game?',
         type: 'NEW_FORM',
         status: 'ACTIVE',
-        options: JSON.stringify(['Dragão Cósmico', 'Slime Arco-Íris', 'Fantasma Neon', 'Robô Kawaii']),
+        options: JSON.stringify(['Cosmic Dragon', 'Rainbow Slime', 'Neon Ghost', 'Kawaii Robot']),
         startAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
         endAt: new Date(Date.now() + 6 * 24 * 60 * 60 * 1000),
       },
     }),
     prisma.proposal.create({
       data: {
-        title: 'Frase da Comunidade',
-        description: 'Escolha a frase que aparecerá na landing page!',
+        title: 'Community Phrase',
+        description: 'Choose the phrase that will appear on the landing page!',
         type: 'LORE',
         status: 'CLOSED',
         options: JSON.stringify([
-          'Cuide. Evolua. Domine.',
-          'Sua tribo, sua família.',
-          'Pets unidos jamais serão vencidos!',
+          'Care. Evolve. Dominate.',
+          'Your tribe, your family.',
+          'United pets will never be defeated!',
         ]),
         startAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000),
         endAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
@@ -266,62 +266,44 @@ async function main() {
       },
     }),
   ]);
-  console.log(`   ✅ ${proposals.length} propostas criadas`);
+  console.log(`   ✅ ${proposals.length} proposals created`);
 
-  // Criar alguns votos nas propostas ativas
-  console.log('🗳️ Criando votos...');
-  let voteCount = 0;
-  for (const user of users.slice(0, 10)) {
-    for (const proposal of proposals.filter(p => p.status === 'ACTIVE')) {
-      try {
-        await prisma.vote.create({
-          data: {
-            proposalId: proposal.id,
-            userId: user.id,
-            choice: Math.floor(Math.random() * 4),
-            signature: `fake_sig_${Math.random().toString(36).substring(2)}`,
-          },
-        });
-        voteCount++;
-      } catch {
-        // Ignorar duplicatas
-      }
-    }
-  }
-  console.log(`   ✅ ${voteCount} votos criados`);
+  // Skip creating fake votes - start fresh with 0 votes
+  console.log('🗳️ Skipping fake votes - starting fresh');
+  const voteCount = 0;
 
-  // Criar alguns badges
-  console.log('🎖️ Criando badges...');
+  // Create some badges
+  console.log('🎖️ Creating badges...');
   let badgeCount = 0;
   for (const user of users.slice(0, 5)) {
     await prisma.badge.create({
       data: {
         userId: user.id,
         type: 'early_adopter',
-        metadata: JSON.stringify({ reason: 'Participou do seed inicial' }),
+        metadata: JSON.stringify({ reason: 'Participated in initial seed' }),
       },
     });
     badgeCount++;
   }
-  console.log(`   ✅ ${badgeCount} badges criadas`);
+  console.log(`   ✅ ${badgeCount} badges created`);
 
-  console.log('\n✨ Seed completo!\n');
-  console.log('📊 Resumo:');
-  console.log(`   - ${users.length} usuários`);
+  console.log('\n✨ Seed complete!\n');
+  console.log('📊 Summary:');
+  console.log(`   - ${users.length} users`);
   console.log(`   - ${pets.length} pets`);
-  console.log(`   - ${eventCount} eventos`);
-  console.log(`   - ${visitCount} visitas`);
+  console.log(`   - ${eventCount} events`);
+  console.log(`   - ${visitCount} visits`);
   console.log(`   - ${reactionCount} reactions`);
-  console.log(`   - 1 semana`);
-  console.log(`   - 1 temporada`);
-  console.log(`   - ${proposals.length} propostas`);
-  console.log(`   - ${voteCount} votos`);
+  console.log(`   - 1 week`);
+  console.log(`   - 1 season`);
+  console.log(`   - ${proposals.length} proposals`);
+  console.log(`   - ${voteCount} votes`);
   console.log(`   - ${badgeCount} badges`);
 }
 
 main()
   .catch((e) => {
-    console.error('❌ Erro no seed:', e);
+    console.error('❌ Seed error:', e);
     process.exit(1);
   })
   .finally(async () => {

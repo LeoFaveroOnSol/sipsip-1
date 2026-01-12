@@ -60,7 +60,7 @@ export default function WeekPage() {
       <div className="min-h-screen flex items-center justify-center p-6">
         <Card size="md" padding="lg" className="text-center">
           <div className="text-6xl mb-4 animate-pulse">⚔️</div>
-          <p className="font-mono text-sm">Carregando guerra...</p>
+          <p className="font-mono text-sm">Loading war...</p>
         </Card>
       </div>
     );
@@ -77,10 +77,10 @@ export default function WeekPage() {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-black uppercase italic underline decoration-4 mb-2">
-            Guerra das Tribos
+            Tribal War
           </h1>
           <p className="font-mono text-sm opacity-60">
-            Semana {currentWeek.weekNumber} de {currentWeek.year}
+            Week {currentWeek.weekNumber} of {currentWeek.year}
           </p>
         </div>
 
@@ -88,21 +88,21 @@ export default function WeekPage() {
         <Card size="lg" padding="md" className="mb-8">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
             <div>
-              <h2 className="font-black text-xl uppercase">Progresso da Semana</h2>
+              <h2 className="font-black text-xl uppercase">Week Progress</h2>
               <p className="font-mono text-[10px] opacity-50">
-                {new Date(currentWeek.startAt).toLocaleDateString('pt-BR')} - {new Date(currentWeek.endAt).toLocaleDateString('pt-BR')}
+                {new Date(currentWeek.startAt).toLocaleDateString('en-US')} - {new Date(currentWeek.endAt).toLocaleDateString('en-US')}
               </p>
             </div>
             <div className="text-right">
               <span className="font-black text-4xl">{currentWeek.progress}%</span>
               <p className="font-mono text-[10px] opacity-50">
-                {currentWeek.isActive ? 'EM ANDAMENTO' : 'FINALIZADA'}
+                {currentWeek.isActive ? 'IN PROGRESS' : 'COMPLETED'}
               </p>
             </div>
           </div>
-          
+
           <div className="h-4 border-2 border-black bg-white p-[2px] shadow-[2px_2px_0px_rgba(0,0,0,1)]">
-            <div 
+            <div
               className="h-full bg-black transition-all duration-500"
               style={{ width: `${currentWeek.progress}%` }}
             />
@@ -113,14 +113,14 @@ export default function WeekPage() {
           {/* Leaderboard */}
           <div className="lg:col-span-2">
             <h2 className="text-2xl font-black uppercase italic border-b-4 border-black pb-2 mb-6">
-              Placar Atual
+              Current Leaderboard
             </h2>
-            
+
             <Leaderboard entries={leaderboard} showLive />
 
             <div className="mt-6 pt-6 border-t-2 border-black">
               <p className="text-center font-mono text-[10px] opacity-50 mb-4">
-                Clique em uma tribo para ver breakdown
+                Click a tribe to see breakdown
               </p>
               <div className="flex justify-center gap-2">
                 {Object.entries(TRIBES).map(([key, tribe]) => (
@@ -158,10 +158,10 @@ export default function WeekPage() {
 
                 <div className="space-y-3">
                   {[
-                    { key: 'Activity', value: selectedScore.scoreActivity, icon: '🎮', label: 'Atividade' },
+                    { key: 'Activity', value: selectedScore.scoreActivity, icon: '🎮', label: 'Activity' },
                     { key: 'Social', value: selectedScore.scoreSocial, icon: '💬', label: 'Social' },
-                    { key: 'Consistency', value: selectedScore.scoreConsistency, icon: '🔥', label: 'Consistência' },
-                    { key: 'Event', value: selectedScore.scoreEvent, icon: '⭐', label: 'Eventos' },
+                    { key: 'Consistency', value: selectedScore.scoreConsistency, icon: '🔥', label: 'Consistency' },
+                    { key: 'Event', value: selectedScore.scoreEvent, icon: '⭐', label: 'Events' },
                   ].map((item) => (
                     <div key={item.key} className="flex justify-between items-center p-3 border-2 border-black bg-zinc-50">
                       <span className="font-mono text-xs flex items-center gap-2">
@@ -183,7 +183,7 @@ export default function WeekPage() {
               <Card padding="lg" className="text-center">
                 <span className="text-5xl mb-4 block">📊</span>
                 <p className="font-mono text-sm opacity-50">
-                  Selecione uma tribo para ver o breakdown
+                  Select a tribe to see breakdown
                 </p>
               </Card>
             )}
@@ -191,13 +191,13 @@ export default function WeekPage() {
             {/* Scoring Info */}
             <Card padding="md" className="mt-6">
               <h3 className="font-black uppercase text-sm mb-4 border-b-2 border-black pb-2">
-                Como funciona?
+                How does it work?
               </h3>
               <div className="space-y-2 font-mono text-[10px] opacity-70">
-                <p>🎮 Atividade ({SCORING.weights.activity}%)</p>
+                <p>🎮 Activity ({SCORING.weights.activity}%)</p>
                 <p>💬 Social ({SCORING.weights.social}%)</p>
-                <p>🔥 Consistência ({SCORING.weights.consistency}%)</p>
-                <p>⭐ Eventos ({SCORING.weights.event}%)</p>
+                <p>🔥 Consistency ({SCORING.weights.consistency}%)</p>
+                <p>⭐ Events ({SCORING.weights.event}%)</p>
               </div>
             </Card>
           </div>
@@ -207,7 +207,7 @@ export default function WeekPage() {
         {history.length > 0 && (
           <div className="mt-12">
             <h2 className="text-2xl font-black uppercase italic border-b-4 border-black pb-2 mb-6">
-              Histórico
+              History
             </h2>
             <div className="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-8 gap-4">
               {history.map((week) => {
@@ -215,7 +215,7 @@ export default function WeekPage() {
                 return (
                   <Card key={week.id} size="sm" padding="sm" className="text-center">
                     <span className="text-2xl block mb-2">{winner?.emoji || '🤷'}</span>
-                    <div className="font-black text-xs">S{week.weekNumber}</div>
+                    <div className="font-black text-xs">W{week.weekNumber}</div>
                     <div className="font-mono text-[8px] opacity-50">{week.year}</div>
                   </Card>
                 );

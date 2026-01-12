@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
 
     if (!parsed.success) {
       return NextResponse.json(
-        { success: false, error: 'Dados inválidos' },
+        { success: false, error: 'Invalid data' },
         { status: 400 }
       );
     }
@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
     // Validar endereço
     if (!isValidSolanaAddress(wallet)) {
       return NextResponse.json(
-        { success: false, error: 'Endereço Solana inválido' },
+        { success: false, error: 'Invalid Solana address' },
         { status: 400 }
       );
     }
@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
 
     if (!rateLimit.allowed) {
       return NextResponse.json(
-        { success: false, error: 'Muitas tentativas. Tente novamente em breve.' },
+        { success: false, error: 'Too many attempts. Please try again later.' },
         { status: 429 }
       );
     }
@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
     const nonceValid = await verifyNonce(nonce, wallet);
     if (!nonceValid) {
       return NextResponse.json(
-        { success: false, error: 'Nonce inválido ou expirado' },
+        { success: false, error: 'Invalid or expired nonce' },
         { status: 401 }
       );
     }
@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
 
     if (!signatureValid) {
       return NextResponse.json(
-        { success: false, error: 'Assinatura inválida' },
+        { success: false, error: 'Invalid signature' },
         { status: 401 }
       );
     }
@@ -99,7 +99,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Login error:', error);
     return NextResponse.json(
-      { success: false, error: 'Erro interno' },
+      { success: false, error: 'Internal error' },
       { status: 500 }
     );
   }

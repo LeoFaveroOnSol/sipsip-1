@@ -3,10 +3,10 @@ import dynamic from 'next/dynamic';
 import './globals.css';
 import { Footer } from '@/components/layout/Footer';
 
-// Import dinâmico do ClientProviders para evitar SSR
+// Dynamic import of ClientProviders to avoid SSR
 const ClientProviders = dynamic(
   () => import('@/components/providers/ClientProviders'),
-  { 
+  {
     ssr: false,
     loading: () => (
       <>
@@ -18,8 +18,8 @@ const ClientProviders = dynamic(
 );
 
 export const metadata: Metadata = {
-  title: 'SipSip - Tamagotchi de Tribos',
-  description: 'A primeira simulação de sobrevivência tribal na Solana. Sua carteira é seu destino.',
+  title: 'SipSip - Tribal Tamagotchi',
+  description: 'The first tribal survival simulation on Solana. Your wallet is your destiny.',
 };
 
 export default function RootLayout({
@@ -28,11 +28,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="pt-BR">
+    <html lang="en">
       <body className="min-h-screen flex flex-col">
         {/* Noise Overlay */}
         <div className="noise-overlay" />
-        
+
         <ClientProviders>
           <main className="flex-1 pt-20 pb-4">{children}</main>
           <Footer />

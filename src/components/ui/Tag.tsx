@@ -7,13 +7,15 @@ interface TagProps {
   position?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
   rotate?: number;
   variant?: 'warning' | 'info' | 'success';
+  className?: string;
 }
 
-export function Tag({ 
-  children, 
+export function Tag({
+  children,
   position = 'top-left',
   rotate = -3,
   variant = 'warning',
+  className = '',
 }: TagProps) {
   const positions = {
     'top-left': '-top-3 -left-3',
@@ -29,7 +31,7 @@ export function Tag({
   };
 
   return (
-    <div 
+    <div
       className={`
         absolute z-10
         px-3 py-1
@@ -37,6 +39,7 @@ export function Tag({
         font-black text-[10px] italic uppercase
         ${positions[position]}
         ${variants[variant]}
+        ${className}
       `}
       style={{ transform: `rotate(${rotate}deg)` }}
     >

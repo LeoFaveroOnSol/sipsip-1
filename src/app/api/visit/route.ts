@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
     const user = await getCurrentUser();
 
     if (!user) {
-      return NextResponse.json({ success: false, error: 'Não autenticado' }, { status: 401 });
+      return NextResponse.json({ success: false, error: 'Not authenticated' }, { status: 401 });
     }
 
     // Rate limiting
@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
 
     if (!rateLimit.allowed) {
       return NextResponse.json(
-        { success: false, error: 'Muitas requisições' },
+        { success: false, error: 'Too many requests' },
         { status: 429 }
       );
     }
@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
     const parsed = visitSchema.safeParse(body);
 
     if (!parsed.success) {
-      return NextResponse.json({ success: false, error: 'Dados inválidos' }, { status: 400 });
+      return NextResponse.json({ success: false, error: 'Invalid data' }, { status: 400 });
     }
 
     const { targetPetId } = parsed.data;
@@ -44,13 +44,13 @@ export async function POST(request: NextRequest) {
     const targetPet = await prisma.pet.findUnique({ where: { id: targetPetId } });
 
     if (!targetPet) {
-      return NextResponse.json({ success: false, error: 'Pet não encontrado' }, { status: 404 });
+      return NextResponse.json({ success: false, error: 'Pet not found' }, { status: 404 });
     }
 
     // Não pode visitar o próprio pet
     if (targetPet.userId === user.id) {
       return NextResponse.json(
-        { success: false, error: 'Você não pode visitar seu próprio pet' },
+        { success: false, error: 'You cannot visit your own pet' },
         { status: 400 }
       );
     }
@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           success: false,
-          error: 'Você já visitou este pet recentemente',
+          error: 'You already visited this pet recently',
           nextVisitAt: nextVisitAt.toISOString(),
         },
         { status: 400 }
@@ -107,7 +107,7 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error('Visit error:', error);
-    return NextResponse.json({ success: false, error: 'Erro interno' }, { status: 500 });
+    return NextResponse.json({ success: false, error: 'Internal error' }, { status: 500 });
   }
 }
 

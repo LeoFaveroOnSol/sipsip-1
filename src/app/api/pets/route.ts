@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
 
     const where: Record<string, unknown> = {};
 
-    if (tribe && ['FOFO', 'CAOS', 'CHAD', 'CRINGE'].includes(tribe)) {
+    if (tribe && ['FOFO', 'CAOS', 'CHAD', 'DEGEN'].includes(tribe)) {
       where.tribe = tribe;
     }
 
@@ -52,7 +52,7 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error('List pets error:', error);
-    return NextResponse.json({ success: false, error: 'Erro interno' }, { status: 500 });
+    return NextResponse.json({ success: false, error: 'Internal error' }, { status: 500 });
   }
 }
 

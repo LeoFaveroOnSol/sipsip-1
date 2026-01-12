@@ -12,10 +12,10 @@ interface PetStatsProps {
 export function PetStats({ hunger, mood, energy, reputation }: PetStatsProps) {
   return (
     <div className="space-y-1">
-      <ProgressBar label="Fome" value={hunger} statType="hunger" />
-      <ProgressBar label="Humor" value={mood} statType="mood" />
-      <ProgressBar label="Energia" value={energy} statType="energy" />
-      <ProgressBar label="Reputação" value={reputation} statType="reputation" />
+      <ProgressBar label="Hunger" value={hunger} statType="hunger" />
+      <ProgressBar label="Mood" value={mood} statType="mood" />
+      <ProgressBar label="Energy" value={energy} statType="energy" />
+      <ProgressBar label="Reputation" value={reputation} statType="reputation" />
     </div>
   );
 }

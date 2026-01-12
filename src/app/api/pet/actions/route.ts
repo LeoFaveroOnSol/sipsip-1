@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
     const user = await getCurrentUser();
 
     if (!user) {
-      return NextResponse.json({ success: false, error: 'Não autenticado' }, { status: 401 });
+      return NextResponse.json({ success: false, error: 'Not authenticated' }, { status: 401 });
     }
 
     // Rate limiting
@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
 
     if (!rateLimit.allowed) {
       return NextResponse.json(
-        { success: false, error: 'Muitas requisições. Aguarde um momento.' },
+        { success: false, error: 'Too many requests. Please wait.' },
         { status: 429 }
       );
     }
@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
     const pet = await getUserPetWithStats(user.id);
 
     if (!pet) {
-      return NextResponse.json({ success: false, error: 'Você não tem um pet' }, { status: 404 });
+      return NextResponse.json({ success: false, error: 'You do not have a pet' }, { status: 404 });
     }
 
     // Executar ação
@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error('Action error:', error);
-    return NextResponse.json({ success: false, error: 'Erro interno' }, { status: 500 });
+    return NextResponse.json({ success: false, error: 'Internal error' }, { status: 500 });
   }
 }
 

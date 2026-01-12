@@ -4,7 +4,7 @@ import { ReactNode, ButtonHTMLAttributes } from 'react';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;
-  variant?: 'default' | 'primary' | 'ghost';
+  variant?: 'default' | 'primary' | 'secondary' | 'ghost';
   size?: 'sm' | 'md' | 'lg';
   fullWidth?: boolean;
 }
@@ -29,6 +29,7 @@ export function Button({
   const variants = {
     default: 'bg-white text-black hover:bg-zinc-100',
     primary: 'bg-black text-white hover:bg-zinc-800',
+    secondary: 'bg-zinc-100 text-black hover:bg-zinc-200',
     ghost: 'bg-transparent border-2 hover:bg-zinc-100',
   };
 

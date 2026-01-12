@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
     const user = await getCurrentUser();
 
     if (!user) {
-      return NextResponse.json({ success: false, error: 'Não autenticado' }, { status: 401 });
+      return NextResponse.json({ success: false, error: 'Not authenticated' }, { status: 401 });
     }
 
     // Rate limiting
@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
 
     if (!rateLimit.allowed) {
       return NextResponse.json(
-        { success: false, error: 'Muitas requisições' },
+        { success: false, error: 'Too many requests' },
         { status: 429 }
       );
     }
@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
     const parsed = reactionSchema.safeParse(body);
 
     if (!parsed.success) {
-      return NextResponse.json({ success: false, error: 'Dados inválidos' }, { status: 400 });
+      return NextResponse.json({ success: false, error: 'Invalid data' }, { status: 400 });
     }
 
     const { petId, type } = parsed.data;
@@ -44,13 +44,13 @@ export async function POST(request: NextRequest) {
     const pet = await prisma.pet.findUnique({ where: { id: petId } });
 
     if (!pet) {
-      return NextResponse.json({ success: false, error: 'Pet não encontrado' }, { status: 404 });
+      return NextResponse.json({ success: false, error: 'Pet not found' }, { status: 404 });
     }
 
     // Não pode reagir ao próprio pet
     if (pet.userId === user.id) {
       return NextResponse.json(
-        { success: false, error: 'Você não pode reagir ao seu próprio pet' },
+        { success: false, error: 'You cannot react to your own pet' },
         { status: 400 }
       );
     }
@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error('Reaction error:', error);
-    return NextResponse.json({ success: false, error: 'Erro interno' }, { status: 500 });
+    return NextResponse.json({ success: false, error: 'Internal error' }, { status: 500 });
   }
 }
 

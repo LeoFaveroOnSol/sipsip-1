@@ -5,7 +5,7 @@ import { ReactNode } from 'react';
 interface BadgeProps {
   children: ReactNode;
   variant?: 'default' | 'warning' | 'success' | 'error' | 'tribe';
-  tribe?: 'FOFO' | 'CAOS' | 'CHAD' | 'CRINGE';
+  tribe?: 'FOFO' | 'CAOS' | 'CHAD' | 'DEGEN';
   size?: 'sm' | 'md';
   animate?: boolean;
 }
@@ -29,7 +29,7 @@ export function Badge({
     FOFO: 'bg-pink-400 text-pink-900',
     CAOS: 'bg-red-600 text-white',
     CHAD: 'bg-emerald-500 text-emerald-950',
-    CRINGE: 'bg-violet-500 text-white',
+    DEGEN: 'bg-violet-500 text-white',
   };
 
   const sizes = {

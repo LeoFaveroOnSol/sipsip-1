@@ -27,7 +27,7 @@ export async function GET() {
       FOFO: 0,
       CAOS: 0,
       CHAD: 0,
-      CRINGE: 0,
+      DEGEN: 0,
     };
 
     for (const week of weeks) {
@@ -56,7 +56,7 @@ export async function GET() {
     });
   } catch (error) {
     console.error('Season error:', error);
-    return NextResponse.json({ success: false, error: 'Erro interno' }, { status: 500 });
+    return NextResponse.json({ success: false, error: 'Internal error' }, { status: 500 });
   }
 }
 

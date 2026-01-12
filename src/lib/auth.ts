@@ -118,20 +118,25 @@ export async function deleteSession(token: string): Promise<void> {
 // ============== AUTH HELPERS ==============
 
 export async function getCurrentUser() {
-  const cookieStore = await cookies();
-  const token = cookieStore.get('session')?.value;
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get('session')?.value;
 
-  if (!token) return null;
+    if (!token) return null;
 
-  const session = await verifySession(token);
-  if (!session) return null;
+    const session = await verifySession(token);
+    if (!session) return null;
 
-  const user = await prisma.user.findUnique({
-    where: { id: session.userId },
-    include: { pet: true },
-  });
+    const user = await prisma.user.findUnique({
+      where: { id: session.userId },
+      include: { pet: true },
+    });
 
-  return user;
+    return user;
+  } catch (error) {
+    console.error('getCurrentUser error:', error);
+    return null;
+  }
 }
 
 export async function requireAuth() {
@@ -193,15 +198,15 @@ export function checkRateLimit(
   return { allowed: true, remaining: maxRequests - record.count, resetAt: record.resetAt };
 }
 
-// Limpar rate limits antigos periodicamente
+// Clean up old rate limits periodically
 setInterval(
   () => {
     const now = Date.now();
-    for (const [key, value] of rateLimitStore.entries()) {
+    rateLimitStore.forEach((value, key) => {
       if (value.resetAt < now) {
         rateLimitStore.delete(key);
       }
-    }
+    });
   },
   60 * 1000
-); // A cada minuto
+); // Every minute

@@ -41,7 +41,7 @@ export function ProposalCard({ proposal, onVote, isVoting }: ProposalCardProps) 
     EXECUTED: 'text-blue-400 bg-blue-500/20',
   };
 
-  // Calcular porcentagens de votos
+  // Calculate vote percentages
   const totalVotes = proposal.result
     ? Object.values(proposal.result).reduce((a, b) => a + b, 0)
     : proposal.votes;
@@ -69,9 +69,9 @@ export function ProposalCard({ proposal, onVote, isVoting }: ProposalCardProps) 
         </div>
 
         <div className="text-right text-sm text-gray-500">
-          <div>{proposal.votes} votos</div>
+          <div>{proposal.votes} votes</div>
           <div className="text-xs">
-            Até {new Date(proposal.endAt).toLocaleDateString('pt-BR')}
+            Until {new Date(proposal.endAt).toLocaleDateString('en-US')}
           </div>
         </div>
       </div>
@@ -85,7 +85,7 @@ export function ProposalCard({ proposal, onVote, isVoting }: ProposalCardProps) 
           return (
             <div key={index} className="space-y-1">
               {(isClosed || hasVoted) ? (
-                // Mostrar resultados
+                // Show results
                 <div className="space-y-1">
                   <div className="flex justify-between text-sm">
                     <span className={isSelected ? 'text-pink-400 font-medium' : ''}>
@@ -97,7 +97,7 @@ export function ProposalCard({ proposal, onVote, isVoting }: ProposalCardProps) 
                   <ProgressBar value={percentage} size="sm" />
                 </div>
               ) : (
-                // Botões de voto
+                // Vote buttons
                 <Button
                   variant="secondary"
                   size="sm"
@@ -116,7 +116,7 @@ export function ProposalCard({ proposal, onVote, isVoting }: ProposalCardProps) 
       {/* Footer */}
       {hasVoted && (
         <div className="text-center text-sm text-green-400">
-          ✓ Você votou nesta proposta
+          ✓ You already voted on this proposal
         </div>
       )}
     </Card>

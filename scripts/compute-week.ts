@@ -3,7 +3,10 @@
  * Executar: npm run compute:week
  */
 
-import { PrismaClient, Tribe } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
+
+// Local type (SQLite doesn't support enums)
+type Tribe = 'FOFO' | 'CAOS' | 'CHAD' | 'DEGEN';
 
 const prisma = new PrismaClient();
 
@@ -42,7 +45,7 @@ async function computeWeekScores() {
   console.log(`   De: ${week.startAt.toLocaleDateString('pt-BR')}`);
   console.log(`   Até: ${week.endAt.toLocaleDateString('pt-BR')}\n`);
 
-  const tribes: Tribe[] = ['FOFO', 'CAOS', 'CHAD', 'CRINGE'];
+  const tribes: Tribe[] = ['FOFO', 'CAOS', 'CHAD', 'DEGEN'];
 
   for (const tribe of tribes) {
     console.log(`\n🔹 Computando ${tribe}...`);

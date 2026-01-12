@@ -4,12 +4,15 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/components/providers/AuthProvider';
 import { WalletAuthSection } from './WalletAuthSection';
-import { 
-  Egg, 
-  Swords, 
-  Trophy, 
+import { HowItWorksButton } from './HowItWorksModal';
+import {
+  Egg,
+  Swords,
+  Trophy,
   Landmark,
   User,
+  Target,
+  Skull,
 } from 'lucide-react';
 
 export function Header() {
@@ -17,8 +20,10 @@ export function Header() {
   const { isAuthenticated } = useAuth();
 
   const navItems = [
-    { href: '/tribes', label: 'Tribos', icon: Swords },
-    { href: '/week', label: 'Guerra', icon: Trophy },
+    { href: '/tribes', label: 'Tribes', icon: Swords },
+    { href: '/week', label: 'War', icon: Trophy },
+    { href: '/battle', label: 'Battle', icon: Target },
+    { href: '/raid', label: 'Raid', icon: Skull },
     { href: '/council', label: 'Council', icon: Landmark },
   ];
 
@@ -40,7 +45,7 @@ export function Header() {
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href;
-            
+
             return (
               <Link
                 key={item.href}
@@ -61,6 +66,7 @@ export function Header() {
               </Link>
             );
           })}
+          <HowItWorksButton />
         </nav>
 
         {/* Auth Section */}
@@ -90,14 +96,14 @@ export function Header() {
           className={`flex-1 flex flex-col items-center gap-1 py-3 ${pathname === '/week' ? 'bg-black text-white' : ''}`}
         >
           <Trophy size={20} />
-          <span className="text-[8px] font-black uppercase">Guerra</span>
+          <span className="text-[8px] font-black uppercase">War</span>
         </Link>
         <Link
           href="/tribes"
           className={`flex-1 flex flex-col items-center gap-1 py-3 ${pathname === '/tribes' ? 'bg-black text-white' : ''}`}
         >
           <Swords size={20} />
-          <span className="text-[8px] font-black uppercase">Tribos</span>
+          <span className="text-[8px] font-black uppercase">Tribes</span>
         </Link>
         <Link
           href="/council"

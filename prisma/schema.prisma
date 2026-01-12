@@ -1,6 +1,9 @@
 // Prisma Schema para SipSip - Tamagotchi de Tribos
 // SQLite para dev, Postgres para produção
 // Nota: SQLite não suporta enums, então usamos String
+//
+// Tribes: FOFO, CAOS, CHAD, DEGEN
+// Stages: EGG, BABY, TEEN, ADULT, LEGENDARY
 
 generator client {
   provider = "prisma-client-js"
@@ -14,17 +17,32 @@ datasource db {
 // ============== USUÁRIOS E AUTH ==============
 
 model User {
-  id            String    @id @default(cuid())
-  walletPubkey  String    @unique
-  createdAt     DateTime  @default(now())
-  lastLoginAt   DateTime  @default(now())
-  
-  sessions      Session[]
-  pet           Pet?
-  visits        Visit[]   @relation("Visitor")
-  reactions     Reaction[]
-  badges        Badge[]
-  votes         Vote[]
+  id           String   @id @default(cuid())
+  walletPubkey String   @unique
+  createdAt    DateTime @default(now())
+  lastLoginAt  DateTime @default(now())
+
+  sessions  Session[]
+  pet       Pet?
+  visits    Visit[]    @relation("Visitor")
+  reactions Reaction[]
+  badges    Badge[]
+  votes     Vote[]
+
+  // Token & Staking
+  stakes       TokenStake[]
+  stakeHistory StakeHistory[]
+
+  // PvP Battles
+  battlesAsChallenger Battle[] @relation("Challenger")
+  battlesAsDefender   Battle[] @relation("Defender")
+
+  // Tribe Guild
+  chatMessages TribeChatMessage[]
+  tribeRanks   TribeMemberRank[]
+
+  // Boss Raids
+  raidParticipations BossRaidParticipant[]
 }
 
 model Session {
@@ -33,8 +51,8 @@ model Session {
   token     String   @unique
   expiresAt DateTime
   createdAt DateTime @default(now())
-  
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Nonce {
@@ -46,56 +64,101 @@ model Nonce {
 }
 
 // ============== PETS ==============
-// Tribe: FOFO, CAOS, CHAD, CRINGE
+// Tribe: FOFO, CAOS, CHAD, DEGEN
 // Stage: EGG, BABY, TEEN, ADULT, LEGENDARY
 
 model Pet {
-  id           String    @id @default(cuid())
-  userId       String    @unique
-  name         String
-  tribe        String    // FOFO, CAOS, CHAD, CRINGE
-  stage        String    @default("EGG") // EGG, BABY, TEEN, ADULT, LEGENDARY
-  formId       String    @default("egg_default")
-  eggSeed      Int       @default(0)
-  
+  id      String @id @default(cuid())
+  userId  String @unique
+  name    String
+  tribe   String // FOFO, CAOS, CHAD, DEGEN
+  stage   String @default("EGG") // EGG, BABY, TEEN, ADULT, LEGENDARY
+  formId  String @default("egg_default")
+  eggSeed Int    @default(0)
+
   // Stats (0-100)
-  hunger       Int       @default(50)
-  mood         Int       @default(50)
-  energy       Int       @default(50)
-  reputation   Int       @default(0)
-  
+  hunger     Int @default(50)
+  mood       Int @default(50)
+  energy     Int @default(50)
+  reputation Int @default(0)
+
   // Timestamps para cálculo on-read
   lastFeedAt      DateTime @default(now())
   lastPlayAt      DateTime @default(now())
   lastSleepAt     DateTime @default(now())
   lastSocializeAt DateTime @default(now())
   lastActionAt    DateTime @default(now())
-  
+
   // Streaks e progressão
-  careStreak   Int       @default(0)
-  totalActions Int       @default(0)
-  
+  careStreak   Int @default(0)
+  totalActions Int @default(0)
+
   // Estado especial
-  neglectedAt  DateTime?
-  isNeglected  Boolean   @default(false)
-  
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-  
-  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  events       PetEvent[]
-  visitsReceived Visit[] @relation("TargetPet")
-  reactions    Reaction[]
+  neglectedAt DateTime?
+  isNeglected Boolean   @default(false)
+
+  // Shame Mode (enhanced neglect)
+  shameRecoveryStreak Int       @default(0)
+  shameEnteredAt      DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user           User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  events         PetEvent[]
+  actions        PetAction[]
+  visitsReceived Visit[]    @relation("TargetPet")
+  reactions      Reaction[]
+  chatMessages   ChatMessage[]
+
+  // Token & Staking
+  stakes TokenStake[]
+
+  // Pet Skills
+  skills PetSkill[]
+
+  // PvP Battles
+  battlesAsChallenger Battle[] @relation("ChallengerPet")
+  battlesAsDefender   Battle[] @relation("DefenderPet")
+
+  // Boss Raids
+  raidParticipations BossRaidParticipant[]
 }
 
 model PetEvent {
   id        String   @id @default(cuid())
   petId     String
-  type      String   // evolution, action, neglect, recovery, visit, reaction, mutation
-  payload   String   // JSON string
+  type      String // evolution, action, neglect, recovery, visit, reaction, mutation
+  payload   String // JSON string
   createdAt DateTime @default(now())
-  
-  pet       Pet      @relation(fields: [petId], references: [id], onDelete: Cascade)
+
+  pet Pet @relation(fields: [petId], references: [id], onDelete: Cascade)
+}
+
+model PetAction {
+  id           String   @id @default(cuid())
+  petId        String
+  action       String
+  statAffected String
+  change       Int
+  oldValue     Int
+  newValue     Int
+  txSignature  String?  @unique // Transaction signature for on-chain verification
+  createdAt    DateTime @default(now())
+
+  pet Pet @relation(fields: [petId], references: [id], onDelete: Cascade)
+
+  @@index([txSignature])
+}
+
+model Stake {
+  id               String   @id @default(cuid())
+  walletPubkey     String   @unique
+  amount           Float    @default(0)
+  power            Float    @default(0)
+  apy              Float    @default(0.03)
+  lastCalculatedAt DateTime @default(now())
+  createdAt        DateTime @default(now())
 }
 
 // ============== SOCIAL ==============
@@ -105,10 +168,10 @@ model Visit {
   visitorUserId String
   targetPetId   String
   createdAt     DateTime @default(now())
-  
-  visitor       User     @relation("Visitor", fields: [visitorUserId], references: [id], onDelete: Cascade)
-  targetPet     Pet      @relation("TargetPet", fields: [targetPetId], references: [id], onDelete: Cascade)
-  
+
+  visitor   User @relation("Visitor", fields: [visitorUserId], references: [id], onDelete: Cascade)
+  targetPet Pet  @relation("TargetPet", fields: [targetPetId], references: [id], onDelete: Cascade)
+
   @@unique([visitorUserId, targetPetId, createdAt])
 }
 
@@ -118,43 +181,45 @@ model Reaction {
   id        String   @id @default(cuid())
   userId    String
   petId     String
-  type      String   // LOVE, LOL, CRINGE, CHAD, RIP
+  type      String // LOVE, LOL, CRINGE, CHAD, RIP
   createdAt DateTime @default(now())
-  
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  pet       Pet      @relation(fields: [petId], references: [id], onDelete: Cascade)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  pet  Pet  @relation(fields: [petId], references: [id], onDelete: Cascade)
 }
 
 // ============== GUERRA DAS TRIBOS ==============
 
 model Week {
-  id           String       @id @default(cuid())
-  weekNumber   Int
-  year         Int
-  startAt      DateTime
-  endAt        DateTime
-  winnerTribe  String?      // FOFO, CAOS, CHAD, CRINGE
-  computedAt   DateTime?
-  isActive     Boolean      @default(true)
-  
-  scores       TribeScore[]
-  badges       Badge[]
-  
+  id          String    @id @default(cuid())
+  weekNumber  Int
+  year        Int
+  startAt     DateTime
+  endAt       DateTime
+  winnerTribe String? // FOFO, CAOS, CHAD, DEGEN
+  computedAt  DateTime?
+  isActive    Boolean   @default(true)
+
+  scores TribeScore[]
+  badges Badge[]
+  raids  BossRaid[]
+
   @@unique([weekNumber, year])
 }
 
 model TribeScore {
-  id              String @id @default(cuid())
-  weekId          String
-  tribe           String // FOFO, CAOS, CHAD, CRINGE
-  scoreActivity   Int    @default(0)
-  scoreSocial     Int    @default(0)
-  scoreConsistency Int   @default(0)
-  scoreEvent      Int    @default(0)
-  total           Int    @default(0)
-  
-  week            Week   @relation(fields: [weekId], references: [id], onDelete: Cascade)
-  
+  id               String @id @default(cuid())
+  weekId           String
+  tribe            String // FOFO, CAOS, CHAD, DEGEN
+  scoreActivity    Int    @default(0)
+  scoreSocial      Int    @default(0)
+  scoreConsistency Int    @default(0)
+  scoreEvent       Int    @default(0)
+  scorePower       Int    @default(0) // NEW: Power-based scoring
+  total            Int    @default(0)
+
+  week Week @relation(fields: [weekId], references: [id], onDelete: Cascade)
+
   @@unique([weekId, tribe])
 }
 
@@ -167,10 +232,10 @@ model Season {
   description  String
   startAt      DateTime
   endAt        DateTime
-  winnerTribe  String?  // FOFO, CAOS, CHAD, CRINGE
+  winnerTribe  String? // FOFO, CAOS, CHAD, DEGEN
   isActive     Boolean  @default(true)
-  
-  badges       Badge[]
+
+  badges Badge[]
 }
 
 // ============== BADGES ==============
@@ -178,15 +243,15 @@ model Season {
 model Badge {
   id        String   @id @default(cuid())
   userId    String
-  type      String   // week_winner, season_winner, mythic_form, holder, etc.
-  metadata  String   // JSON string
+  type      String // week_winner, season_winner, mythic_form, holder, etc.
+  metadata  String // JSON string
   seasonId  String?
   weekId    String?
   createdAt DateTime @default(now())
-  
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  season    Season?  @relation(fields: [seasonId], references: [id])
-  week      Week?    @relation(fields: [weekId], references: [id])
+
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  season Season? @relation(fields: [seasonId], references: [id])
+  week   Week?   @relation(fields: [weekId], references: [id])
 }
 
 // ============== COUNCIL (GOVERNANÇA) ==============
@@ -197,27 +262,256 @@ model Proposal {
   id          String   @id @default(cuid())
   title       String
   description String
-  type        String   // SEASON_THEME, NEW_FORM, LORE, EVENT
+  type        String // SEASON_THEME, NEW_FORM, LORE, EVENT
   status      String   @default("PENDING") // PENDING, ACTIVE, CLOSED, EXECUTED
-  options     String   // JSON array de opções
+  options     String // JSON array de opções
   startAt     DateTime
   endAt       DateTime
-  result      String?  // JSON com resultado
+  result      String? // JSON com resultado
   createdAt   DateTime @default(now())
-  
-  votes       Vote[]
+
+  votes Vote[]
 }
 
 model Vote {
   id         String   @id @default(cuid())
   proposalId String
   userId     String
-  choice     Int      // índice da opção escolhida
-  signature  String   // assinatura da carteira como prova
+  choice     Int // índice da opção escolhida
+  signature  String // assinatura da carteira como prova
   createdAt  DateTime @default(now())
-  
-  proposal   Proposal @relation(fields: [proposalId], references: [id], onDelete: Cascade)
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+
+  proposal Proposal @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@unique([proposalId, userId])
+}
+
+// ============== PET SKILLS ==============
+
+model PetSkill {
+  id        String   @id @default(cuid())
+  petId     String
+  skillId   String   // Skill identifier from constants
+  tier      Int      @default(1) // 1=Common, 2=Rare, 3=Epic, 4=Legendary
+  level     Int      @default(1) // Can level up with more power
+  unlockedAt DateTime @default(now())
+
+  pet Pet @relation(fields: [petId], references: [id], onDelete: Cascade)
+
+  @@unique([petId, skillId])
+  @@index([petId])
+}
+
+// ============== $SIP TOKEN & STAKING ==============
+
+model TokenStake {
+  id             String   @id @default(cuid())
+  userId         String
+  petId          String
+  amountStaked   Float    @default(0) // $SIP amount staked
+  power          Float    @default(0) // Computed: sqrt(amountStaked) * multipliers
+  stakedAt       DateTime @default(now())
+  lastClaimAt    DateTime @default(now())
+  pendingRewards Float    @default(0)
+
+  // On-chain reference (for when we integrate real blockchain)
+  stakeTxSignature String?
+  stakeAccountPda  String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  pet  Pet  @relation(fields: [petId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, petId])
+  @@index([petId])
+}
+
+model StakeHistory {
+  id          String   @id @default(cuid())
+  userId      String
+  petId       String
+  action      String // STAKE, UNSTAKE, CLAIM, BURN_PENALTY
+  amount      Float
+  txSignature String?
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([petId])
+}
+
+// ============== PVP BATTLES ==============
+
+model Battle {
+  id              String  @id @default(cuid())
+  challengerId    String
+  defenderId      String?
+  challengerPetId String
+  defenderPetId   String?
+  betAmount       Float // $SIP bet
+  winnerId        String?
+  winnerPetId     String?
+  status          String  @default("PENDING") // PENDING, MATCHED, ACTIVE, COMPLETED, CANCELLED
+
+  // Combat stats snapshot (captured at match time)
+  challengerPower Float
+  defenderPower   Float?
+  winProbability  Float? // Calculated at match time
+
+  // Results
+  prizePool    Float?
+  burnedAmount Float? // 10% burn
+
+  // On-chain references
+  escrowPda         String?
+  settleTxSignature String?
+
+  // Replay data for 3D animation
+  replayData String? // JSON: animation sequence
+
+  createdAt   DateTime  @default(now())
+  matchedAt   DateTime?
+  completedAt DateTime?
+
+  challenger    User  @relation("Challenger", fields: [challengerId], references: [id])
+  defender      User? @relation("Defender", fields: [defenderId], references: [id])
+  challengerPet Pet   @relation("ChallengerPet", fields: [challengerPetId], references: [id])
+  defenderPet   Pet?  @relation("DefenderPet", fields: [defenderPetId], references: [id])
+
+  @@index([status])
+  @@index([challengerId])
+  @@index([defenderId])
+}
+
+// ============== TRIBE GUILD SYSTEM ==============
+
+model TribeGuild {
+  id          String @id @default(cuid())
+  tribe       String @unique // FOFO, CAOS, CHAD, DEGEN
+  treasury    Float  @default(0) // $SIP from 2% of victories
+  totalPower  Float  @default(0) // Sum of all member power
+  memberCount Int    @default(0)
+
+  // Current week tracking
+  weekId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  messages TribeChatMessage[]
+  rankings TribeMemberRank[]
+}
+
+model TribeChatMessage {
+  id        String   @id @default(cuid())
+  guildId   String
+  userId    String
+  message   String
+  createdAt DateTime @default(now())
+
+  guild TribeGuild @relation(fields: [guildId], references: [id], onDelete: Cascade)
+  user  User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([guildId, createdAt])
+}
+
+model TribeMemberRank {
+  id      String @id @default(cuid())
+  guildId String
+  userId  String
+  petId   String
+  weekId  String
+
+  // Contribution metrics
+  powerContribution Float @default(0)
+  battlesWon        Int   @default(0)
+  battlesLost       Int   @default(0)
+  sipContributed    Float @default(0) // From treasury cut
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  guild TribeGuild @relation(fields: [guildId], references: [id], onDelete: Cascade)
+  user  User       @relation(fields: [userId], references: [id])
+
+  @@unique([guildId, userId, weekId])
+  @@index([weekId])
+}
+
+// ============== GENERAL CHAT ==============
+
+model ChatMessage {
+  id        String   @id @default(cuid())
+  wallet    String
+  petId     String
+  message   String
+  tribe     String? // Optional: filter by tribe
+  createdAt DateTime @default(now())
+
+  pet Pet @relation(fields: [petId], references: [id], onDelete: Cascade)
+
+  @@index([tribe, createdAt])
+}
+
+// ============== BOSS RAIDS (PvE) ==============
+
+model BossRaid {
+  id          String  @id @default(cuid())
+  weekId      String
+  bossName    String
+  bossFormId  String // Visual form for 3D rendering
+  bossElement String? // Optional: fire, ice, chaos, etc.
+
+  // HP tracking
+  bossHpMax     Float // Total HP
+  bossHpCurrent Float // Remaining HP
+
+  // Economy
+  entryFee   Float @default(50) // $SIP
+  rewardPool Float @default(0)
+
+  // Status
+  status String @default("ACTIVE") // ACTIVE, DEFEATED, EXPIRED
+
+  // Killing blow tracking
+  killingBlowUserId String?
+  killingBlowPetId  String?
+
+  startAt    DateTime
+  endAt      DateTime
+  defeatedAt DateTime?
+
+  week         Week                  @relation(fields: [weekId], references: [id], onDelete: Cascade)
+  participants BossRaidParticipant[]
+
+  @@index([weekId])
+  @@index([status])
+}
+
+model BossRaidParticipant {
+  id     String @id @default(cuid())
+  raidId String
+  userId String
+  petId  String
+
+  // Participation stats
+  totalDamage    Float @default(0)
+  attackCount    Int   @default(0)
+  sipContributed Float @default(0) // Entry fee paid
+
+  // Rewards
+  rewardClaimed Float   @default(0)
+  nftBadgeId    String? // If top 10
+  isKillingBlow Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  raid BossRaid @relation(fields: [raidId], references: [id], onDelete: Cascade)
+  user User     @relation(fields: [userId], references: [id])
+  pet  Pet      @relation(fields: [petId], references: [id])
+
+  @@unique([raidId, userId])
+  @@index([raidId])
 }

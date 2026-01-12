@@ -56,7 +56,7 @@ export async function GET() {
     });
   } catch (error) {
     console.error('Week error:', error);
-    return NextResponse.json({ success: false, error: 'Erro interno' }, { status: 500 });
+    return NextResponse.json({ success: false, error: 'Internal error' }, { status: 500 });
   }
 }
 

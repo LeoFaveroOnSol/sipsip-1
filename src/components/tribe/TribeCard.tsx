@@ -16,21 +16,21 @@ const TRIBE_ICONS: Record<string, LucideIcon> = {
   FOFO: Heart,
   CAOS: Skull,
   CHAD: ShieldCheck,
-  CRINGE: Ghost,
+  DEGEN: Ghost,
 };
 
 const TRIBE_STYLES: Record<string, { bg: string; accent: string; text: string }> = {
   FOFO: { bg: 'bg-pink-50', accent: 'bg-pink-500', text: 'text-pink-900' },
   CAOS: { bg: 'bg-zinc-900', accent: 'bg-red-600', text: 'text-white' },
   CHAD: { bg: 'bg-stone-100', accent: 'bg-emerald-500', text: 'text-emerald-950' },
-  CRINGE: { bg: 'bg-violet-50', accent: 'bg-violet-500', text: 'text-violet-900' },
+  DEGEN: { bg: 'bg-violet-50', accent: 'bg-violet-500', text: 'text-violet-900' },
 };
 
 const TRIBE_FLAVORS: Record<string, string> = {
-  FOFO: 'O amor é a arma mais destrutiva.',
-  CAOS: 'Queime o roadmap. Brinque nas cinzas.',
-  CHAD: 'Silêncio. Trabalho. Resultados On-Chain.',
-  CRINGE: 'Seja estranho. Seja livre. Seja meme.',
+  FOFO: 'Love is the most destructive weapon.',
+  CAOS: 'Burn the roadmap. Play in the ashes.',
+  CHAD: 'Silence. Work. On-Chain Results.',
+  DEGEN: 'Be weird. Be free. Be meme.',
 };
 
 export function TribeCard({
@@ -87,12 +87,12 @@ export function TribeCard({
           {tribeInfo.name}
         </h3>
         {size !== 'sm' && (
-          <p className="text-xs font-mono leading-tight opacity-70">
+          <p className={`text-xs font-mono leading-tight opacity-70 ${styles.text}`}>
             {TRIBE_FLAVORS[tribe]}
           </p>
         )}
         {score !== undefined && (
-          <div className="mt-3 font-mono text-sm font-bold">
+          <div className={`mt-3 font-mono text-sm font-bold ${styles.text}`}>
             {score.toLocaleString()} pts
           </div>
         )}

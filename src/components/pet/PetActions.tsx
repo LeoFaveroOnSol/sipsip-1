@@ -6,6 +6,8 @@ import { ACTIONS } from '@/lib/constants';
 
 interface PetActionsProps {
   onActionComplete: () => void;
+  onActionStart?: (action: string) => void;
+  initialCooldowns?: Record<string, string | null>;
 }
 
 const ACTION_ICONS = {
@@ -15,14 +17,30 @@ const ACTION_ICONS = {
   socialize: MessageSquare,
 };
 
-export function PetActions({ onActionComplete }: PetActionsProps) {
+export function PetActions({ onActionComplete, onActionStart, initialCooldowns }: PetActionsProps) {
   const [loading, setLoading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [cooldowns, setCooldowns] = useState<Record<string, Date | null>>({});
 
+  // Update cooldowns when initialCooldowns prop changes
+  useEffect(() => {
+    if (initialCooldowns) {
+      const parsed: Record<string, Date | null> = {};
+      for (const [action, isoString] of Object.entries(initialCooldowns)) {
+        parsed[action] = isoString ? new Date(isoString) : null;
+      }
+      setCooldowns(parsed);
+    }
+  }, [initialCooldowns]);
+
   const performAction = async (actionKey: string) => {
     setLoading(actionKey);
     setError(null);
+
+    // Trigger animation before API call
+    if (onActionStart) {
+      onActionStart(actionKey);
+    }
 
     try {
       const res = await fetch('/api/pet/actions', {
@@ -34,7 +52,7 @@ export function PetActions({ onActionComplete }: PetActionsProps) {
       const data = await res.json();
 
       if (!data.success) {
-        setError(data.error || 'Erro ao executar ação');
+        setError(data.error || 'Error executing action');
         if (data.cooldownEndsAt) {
           setCooldowns(prev => ({
             ...prev,
@@ -43,12 +61,12 @@ export function PetActions({ onActionComplete }: PetActionsProps) {
         }
       } else {
         if (data.data?.evolved) {
-          alert(`🎉 Evolução detectada!`);
+          alert(`🎉 Evolution detected!`);
         }
         onActionComplete();
       }
     } catch {
-      setError('Erro de conexão');
+      setError('Connection error');
     } finally {
       setLoading(null);
     }
@@ -85,7 +103,7 @@ export function PetActions({ onActionComplete }: PetActionsProps) {
     <div className="space-y-4">
       {error && (
         <div className="p-3 bg-red-100 border-2 border-black text-[10px] font-mono text-red-800">
-          {`> ERRO: ${error}`}
+          {`> ERROR: ${error}`}
         </div>
       )}
 

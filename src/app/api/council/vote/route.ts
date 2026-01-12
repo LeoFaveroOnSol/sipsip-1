@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
     const user = await getCurrentUser();
 
     if (!user) {
-      return NextResponse.json({ success: false, error: 'Não autenticado' }, { status: 401 });
+      return NextResponse.json({ success: false, error: 'Not authenticated' }, { status: 401 });
     }
 
     // Rate limiting
@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
 
     if (!rateLimit.allowed) {
       return NextResponse.json(
-        { success: false, error: 'Muitas requisições' },
+        { success: false, error: 'Too many requests' },
         { status: 429 }
       );
     }
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
     const parsed = voteSchema.safeParse(body);
 
     if (!parsed.success) {
-      return NextResponse.json({ success: false, error: 'Dados inválidos' }, { status: 400 });
+      return NextResponse.json({ success: false, error: 'Invalid data' }, { status: 400 });
     }
 
     const { proposalId, choice, signature, timestamp } = parsed.data;
@@ -79,13 +79,13 @@ export async function POST(request: NextRequest) {
     });
 
     if (existingVote) {
-      return NextResponse.json({ success: false, error: 'Você já votou nesta proposta' }, { status: 400 });
+      return NextResponse.json({ success: false, error: 'You already voted on this proposal' }, { status: 400 });
     }
 
     // Verificar timestamp (não pode ser muito antigo)
     const fiveMinutesAgo = Date.now() - 5 * 60 * 1000;
     if (timestamp < fiveMinutesAgo) {
-      return NextResponse.json({ success: false, error: 'Assinatura expirada' }, { status: 400 });
+      return NextResponse.json({ success: false, error: 'Expired signature' }, { status: 400 });
     }
 
     // Verificar assinatura
@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
     const signatureValid = verifySignature(message, signature, user.walletPubkey);
 
     if (!signatureValid) {
-      return NextResponse.json({ success: false, error: 'Assinatura inválida' }, { status: 401 });
+      return NextResponse.json({ success: false, error: 'Invalid signature' }, { status: 401 });
     }
 
     // Registrar voto
@@ -112,7 +112,7 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error('Vote error:', error);
-    return NextResponse.json({ success: false, error: 'Erro interno' }, { status: 500 });
+    return NextResponse.json({ success: false, error: 'Internal error' }, { status: 500 });
   }
 }
 

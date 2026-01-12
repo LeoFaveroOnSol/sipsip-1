@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { PetSprite } from '@/components/pet/PetSprite';
+import { Pet3D } from '@/components/pet/Pet3D';
 import { PetStats } from '@/components/pet/PetStats';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -42,8 +42,8 @@ interface Reaction {
 }
 
 const REACTION_TYPES = [
-  { type: 'LOVE', emoji: '❤️', label: 'Amei' },
-  { type: 'LOL', emoji: '😂', label: 'KKK' },
+  { type: 'LOVE', emoji: '❤️', label: 'Love' },
+  { type: 'LOL', emoji: '😂', label: 'LOL' },
   { type: 'CRINGE', emoji: '😬', label: 'Cringe' },
   { type: 'CHAD', emoji: '💪', label: 'Chad' },
   { type: 'RIP', emoji: '💀', label: 'RIP' },
@@ -77,10 +77,10 @@ export default function PetProfilePage() {
         setPet(data.data.pet);
         setReactions(data.data.reactions || []);
       } else {
-        setError(data.error || 'Pet não encontrado');
+        setError(data.error || 'Pet not found');
       }
     } catch {
-      setError('Erro de conexão');
+      setError('Connection error');
     } finally {
       setIsLoading(false);
     }
@@ -102,7 +102,7 @@ export default function PetProfilePage() {
 
   const handleReaction = async (type: string) => {
     if (!isAuthenticated) {
-      alert('Conecte sua carteira para reagir');
+      alert('Connect your wallet to react');
       return;
     }
 
@@ -129,7 +129,7 @@ export default function PetProfilePage() {
       <div className="min-h-screen flex items-center justify-center p-6">
         <Card size="md" padding="lg" className="text-center">
           <div className="text-6xl mb-4 animate-pulse">🔍</div>
-          <p className="font-mono text-sm">Buscando pet...</p>
+          <p className="font-mono text-sm">Searching pet...</p>
         </Card>
       </div>
     );
@@ -140,10 +140,10 @@ export default function PetProfilePage() {
       <div className="min-h-screen flex items-center justify-center p-6">
         <Card size="md" padding="lg" className="text-center max-w-md">
           <div className="text-6xl mb-4">😢</div>
-          <h2 className="font-black text-xl uppercase mb-2">PET NÃO ENCONTRADO</h2>
+          <h2 className="font-black text-xl uppercase mb-2">PET NOT FOUND</h2>
           <p className="font-mono text-sm mb-6 opacity-60">{error}</p>
           <Link href="/tribes">
-            <Button>EXPLORAR TRIBOS</Button>
+            <Button>EXPLORE TRIBES</Button>
           </Link>
         </Card>
       </div>
@@ -158,7 +158,7 @@ export default function PetProfilePage() {
     FOFO: 'bg-pink-50',
     CAOS: 'bg-zinc-900',
     CHAD: 'bg-stone-100',
-    CRINGE: 'bg-violet-50',
+    DEGEN: 'bg-violet-50',
   };
 
   return (
@@ -167,7 +167,7 @@ export default function PetProfilePage() {
         {/* Owner Badge */}
         {isOwner && (
           <Card size="sm" padding="sm" className="mb-6 bg-yellow-100 text-center">
-            <span className="font-black text-sm">👑 Este é seu pet!</span>
+            <span className="font-black text-sm">👑 This is your pet!</span>
           </Card>
         )}
 
@@ -176,16 +176,16 @@ export default function PetProfilePage() {
           <Card size="lg" padding="lg" className="text-center relative overflow-hidden">
             {/* Scanlines */}
             <div className="scanlines" />
-            
+
             {/* Grid */}
             <div className="grid-pattern" />
 
-            <div className="relative">
-              <PetSprite
+            <div className="relative flex flex-col items-center">
+              <Pet3D
                 tribe={pet.tribe}
                 stage={pet.stage}
                 isNeglected={pet.computedStats.isNeglected}
-                size="xl"
+                size="lg"
               />
 
               <h1 className="font-black text-3xl uppercase mt-6 mb-3">{pet.name}</h1>
@@ -200,8 +200,8 @@ export default function PetProfilePage() {
 
               {/* Form */}
               <Card size="sm" padding="sm" className="mt-6">
-                <div className="font-mono text-[10px] opacity-50 mb-1">FORMA</div>
-                <div className="font-black">{form?.name || 'Desconhecida'}</div>
+                <div className="font-mono text-[10px] opacity-50 mb-1">FORM</div>
+                <div className="font-black">{form?.name || 'Unknown'}</div>
                 <div className="font-mono text-[10px] opacity-60">{form?.description}</div>
               </Card>
 
@@ -215,17 +215,17 @@ export default function PetProfilePage() {
                 <Card size="sm" padding="sm" className="text-center">
                   <MessageSquare size={16} className="mx-auto mb-1" />
                   <div className="font-black text-lg">{pet.totalActions}</div>
-                  <div className="font-mono text-[8px] opacity-50">AÇÕES</div>
+                  <div className="font-mono text-[8px] opacity-50">ACTIONS</div>
                 </Card>
                 <Card size="sm" padding="sm" className="text-center">
                   <Eye size={16} className="mx-auto mb-1" />
                   <div className="font-black text-lg">{pet._count?.visits || 0}</div>
-                  <div className="font-mono text-[8px] opacity-50">VISITAS</div>
+                  <div className="font-mono text-[8px] opacity-50">VISITS</div>
                 </Card>
                 <Card size="sm" padding="sm" className="text-center">
                   <span className="text-lg">💬</span>
                   <div className="font-black text-lg">{pet._count?.reactions || 0}</div>
-                  <div className="font-mono text-[8px] opacity-50">REAÇÕES</div>
+                  <div className="font-mono text-[8px] opacity-50">REACTIONS</div>
                 </Card>
               </div>
 
@@ -256,7 +256,7 @@ export default function PetProfilePage() {
             {/* Reactions */}
             <Card padding="md">
               <h2 className="font-black uppercase text-lg mb-4 border-b-2 border-black pb-2">
-                💬 Reações
+                💬 Reactions
               </h2>
 
               {/* Current reactions */}
@@ -272,14 +272,14 @@ export default function PetProfilePage() {
                     );
                   })
                 ) : (
-                  <p className="font-mono text-sm opacity-50">Nenhuma reação ainda</p>
+                  <p className="font-mono text-sm opacity-50">No reactions yet</p>
                 )}
               </div>
 
               {/* React buttons */}
               {!isOwner && (
                 <div className="border-t-2 border-black pt-4">
-                  <p className="font-mono text-[10px] opacity-50 mb-3">Deixe sua reação:</p>
+                  <p className="font-mono text-[10px] opacity-50 mb-3">Leave your reaction:</p>
                   <div className="flex flex-wrap gap-2">
                     {REACTION_TYPES.map((r) => (
                       <button
@@ -297,7 +297,7 @@ export default function PetProfilePage() {
                   </div>
                   {!isAuthenticated && (
                     <p className="font-mono text-[10px] opacity-30 mt-2">
-                      🔒 Conecte sua carteira para reagir
+                      🔒 Connect your wallet to react
                     </p>
                   )}
                 </div>
@@ -306,16 +306,16 @@ export default function PetProfilePage() {
 
             {/* Share */}
             <Card padding="md" className="text-center">
-              <h2 className="font-black uppercase text-lg mb-4">📤 Compartilhar</h2>
-              <Button 
+              <h2 className="font-black uppercase text-lg mb-4">📤 Share</h2>
+              <Button
                 fullWidth
                 onClick={() => {
                   navigator.clipboard.writeText(window.location.href);
-                  alert('Link copiado!');
+                  alert('Link copied!');
                 }}
               >
                 <Share2 size={16} />
-                COPIAR LINK
+                COPY LINK
               </Button>
             </Card>
           </div>

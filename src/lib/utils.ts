@@ -1,12 +1,12 @@
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
-// Não temos clsx/tailwind-merge instalado, então vamos simplificar
+// We don't have clsx/tailwind-merge installed, so let's simplify
 export function cn(...inputs: ClassValue[]): string {
   return inputs.filter(Boolean).join(' ');
 }
 
-// Formatar data relativa
+// Format relative time
 export function formatRelativeTime(date: Date): string {
   const now = new Date();
   const diff = now.getTime() - date.getTime();
@@ -15,18 +15,18 @@ export function formatRelativeTime(date: Date): string {
   const hours = Math.floor(minutes / 60);
   const days = Math.floor(hours / 24);
 
-  if (days > 0) return `${days}d atrás`;
-  if (hours > 0) return `${hours}h atrás`;
-  if (minutes > 0) return `${minutes}min atrás`;
-  return 'agora';
+  if (days > 0) return `${days}d ago`;
+  if (hours > 0) return `${hours}h ago`;
+  if (minutes > 0) return `${minutes}min ago`;
+  return 'now';
 }
 
-// Formatar tempo restante
+// Format remaining time
 export function formatTimeRemaining(targetDate: Date): string {
   const now = new Date();
   const diff = targetDate.getTime() - now.getTime();
 
-  if (diff <= 0) return 'Disponível!';
+  if (diff <= 0) return 'Available!';
 
   const seconds = Math.floor(diff / 1000);
   const minutes = Math.floor(seconds / 60);
@@ -43,22 +43,22 @@ export function formatTimeRemaining(targetDate: Date): string {
   return `${seconds}s`;
 }
 
-// Gerar seed determinístico
+// Generate deterministic seed
 export function generateEggSeed(): number {
   return Math.floor(Math.random() * 1000000);
 }
 
-// Truncar endereço de carteira
+// Truncate wallet address
 export function truncateWallet(address: string, chars = 4): string {
   if (address.length <= chars * 2 + 3) return address;
   return `${address.slice(0, chars)}...${address.slice(-chars)}`;
 }
 
-// Calcular próxima semana
+// Calculate next week
 export function getWeekBoundaries(date: Date = new Date()): { start: Date; end: Date } {
   const start = new Date(date);
   const day = start.getDay();
-  const diff = start.getDate() - day + (day === 0 ? -6 : 1); // Ajusta para segunda
+  const diff = start.getDate() - day + (day === 0 ? -6 : 1); // Adjust to Monday
   start.setDate(diff);
   start.setHours(0, 0, 0, 0);
 
@@ -69,7 +69,7 @@ export function getWeekBoundaries(date: Date = new Date()): { start: Date; end: 
   return { start, end };
 }
 
-// Número da semana do ano
+// Week number of the year
 export function getWeekNumber(date: Date = new Date()): number {
   const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
   const dayNum = d.getUTCDay() || 7;
@@ -78,38 +78,38 @@ export function getWeekNumber(date: Date = new Date()): number {
   return Math.ceil(((d.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
 }
 
-// Validar nome do pet
+// Validate pet name
 export function validatePetName(name: string): { valid: boolean; error?: string } {
   const trimmed = name.trim();
 
   if (trimmed.length < 2) {
-    return { valid: false, error: 'Nome deve ter pelo menos 2 caracteres' };
+    return { valid: false, error: 'Name must have at least 2 characters' };
   }
 
   if (trimmed.length > 20) {
-    return { valid: false, error: 'Nome deve ter no máximo 20 caracteres' };
+    return { valid: false, error: 'Name can have at most 20 characters' };
   }
 
-  // Apenas letras, números, espaços e alguns caracteres especiais
+  // Only letters, numbers, spaces and some special characters
   const validPattern = /^[a-zA-Z0-9\s\-_áéíóúàèìòùãõâêîôûçÁÉÍÓÚÀÈÌÒÙÃÕÂÊÎÔÛÇ]+$/;
   if (!validPattern.test(trimmed)) {
-    return { valid: false, error: 'Nome contém caracteres inválidos' };
+    return { valid: false, error: 'Name contains invalid characters' };
   }
 
   return { valid: true };
 }
 
-// Clamp valor entre min e max
+// Clamp value between min and max
 export function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max);
 }
 
-// Gerar ID único
+// Generate unique ID
 export function generateId(): string {
   return Math.random().toString(36).substring(2, 15) + Date.now().toString(36);
 }
 
-// Sanitizar string para evitar XSS
+// Sanitize string to prevent XSS
 export function sanitizeString(str: string): string {
   return str
     .replace(/&/g, '&amp;')
@@ -119,7 +119,7 @@ export function sanitizeString(str: string): string {
     .replace(/'/g, '&#039;');
 }
 
-// Verificar se é dia de ritual
+// Check if today is a ritual day
 export function getTodayRitual(): string | null {
   const today = new Date().getDay();
   const rituals: Record<number, string> = {

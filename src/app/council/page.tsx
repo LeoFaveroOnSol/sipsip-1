@@ -53,7 +53,7 @@ export default function CouncilPage() {
 
   const handleVote = async (proposalId: string, support: boolean) => {
     if (!isAuthenticated) {
-      alert('Você precisa estar autenticado para votar');
+      alert('You need to be authenticated to vote');
       return;
     }
 
@@ -69,10 +69,10 @@ export default function CouncilPage() {
       if (data.success) {
         fetchProposals();
       } else {
-        alert(data.error || 'Erro ao votar');
+        alert(data.error || 'Error voting');
       }
     } catch {
-      alert('Erro de conexão');
+      alert('Connection error');
     } finally {
       setVoting(null);
     }
@@ -85,19 +85,19 @@ export default function CouncilPage() {
         <div className="text-center mb-8">
           <div className="text-6xl mb-4">🏛️</div>
           <h1 className="text-4xl font-black uppercase italic underline decoration-4 mb-2">
-            Council de Governança
+            Governance Council
           </h1>
           <p className="font-mono text-sm opacity-60 max-w-xl mx-auto">
-            Vote nas propostas e ajude a moldar o futuro do jogo. Sua carteira, seu voto.
+            Vote on proposals and help shape the game's future. Your wallet, your vote.
           </p>
         </div>
 
         {/* Filters */}
         <div className="flex justify-center gap-2 mb-8">
           {[
-            { key: 'active', label: 'ATIVAS', icon: '🟢' },
-            { key: 'closed', label: 'FECHADAS', icon: '🔴' },
-            { key: 'all', label: 'TODAS', icon: '📋' },
+            { key: 'active', label: 'ACTIVE', icon: '🟢' },
+            { key: 'closed', label: 'CLOSED', icon: '🔴' },
+            { key: 'all', label: 'ALL', icon: '📋' },
           ].map((f) => (
             <button
               key={f.key}
@@ -120,19 +120,19 @@ export default function CouncilPage() {
         {isLoading ? (
           <Card padding="lg" className="text-center">
             <div className="text-6xl mb-4 animate-pulse">🗳️</div>
-            <p className="font-mono text-sm">Carregando propostas...</p>
+            <p className="font-mono text-sm">Loading proposals...</p>
           </Card>
         ) : proposals.length === 0 ? (
           <Card padding="lg" className="text-center">
             <div className="text-6xl mb-4">📭</div>
-            <p className="font-mono text-sm opacity-50">Nenhuma proposta encontrada</p>
+            <p className="font-mono text-sm opacity-50">No proposals found</p>
           </Card>
         ) : (
           <div className="space-y-6">
             {proposals.map((proposal) => {
               const isActive = proposal.status === 'ACTIVE';
               const hasVoted = proposal.userVote !== null;
-              // Usar result para mostrar contagem (se disponível)
+              // Use result to show count (if available)
               const votesFor = proposal.result?.['0'] || 0;
               const votesAgainst = proposal.result?.['1'] || 0;
               const totalVotes = proposal.votes || 0;
@@ -146,7 +146,7 @@ export default function CouncilPage() {
                       <span className="text-3xl">{TYPE_ICONS[proposal.type] || '📋'}</span>
                       <div>
                         <h3 className="font-black text-xl uppercase">{proposal.title}</h3>
-                        <Badge 
+                        <Badge
                           variant={isActive ? 'success' : 'default'}
                           size="sm"
                         >
@@ -155,11 +155,11 @@ export default function CouncilPage() {
                       </div>
                     </div>
                     <div className="text-right font-mono text-[10px] opacity-50">
-                      <div>{totalVotes} votos</div>
+                      <div>{totalVotes} votes</div>
                       {isActive && (
                         <div className="flex items-center gap-1 text-orange-600">
                           <Clock size={10} />
-                          {new Date(proposal.endAt).toLocaleDateString('pt-BR')}
+                          {new Date(proposal.endAt).toLocaleDateString('en-US')}
                         </div>
                       )}
                     </div>
@@ -177,7 +177,7 @@ export default function CouncilPage() {
                         const optionVotes = proposal.result?.[String(idx)] || 0;
                         const percent = totalVotes > 0 ? (optionVotes / totalVotes) * 100 : 0;
                         const isSelected = proposal.userVote === idx;
-                        
+
                         return (
                           <div key={idx} className="space-y-1">
                             <div className="flex justify-between font-black text-xs">
@@ -187,7 +187,7 @@ export default function CouncilPage() {
                               <span className="font-mono">{optionVotes} ({percent.toFixed(0)}%)</span>
                             </div>
                             <div className="h-3 border-2 border-black overflow-hidden bg-zinc-200">
-                              <div 
+                              <div
                                 className={`h-full transition-all duration-500 ${
                                   isSelected ? 'bg-green-500' : 'bg-black'
                                 }`}
@@ -218,13 +218,13 @@ export default function CouncilPage() {
 
                   {isActive && !isAuthenticated && (
                     <div className="text-center py-3 font-mono text-[10px] opacity-50">
-                      🔒 Conecte sua carteira para votar
+                      🔒 Connect your wallet to vote
                     </div>
                   )}
 
                   {hasVoted && (
                     <div className="text-center py-2 font-mono text-[10px] text-green-600">
-                      ✅ Você já votou nesta proposta
+                      ✅ You already voted on this proposal
                     </div>
                   )}
                 </Card>
@@ -236,14 +236,14 @@ export default function CouncilPage() {
         {/* Info */}
         <Card padding="md" className="mt-8">
           <h3 className="font-black uppercase text-sm mb-4 border-b-2 border-black pb-2">
-            Como funciona
+            How it works
           </h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
-              { icon: '🗳️', title: '1 Carteira = 1 Voto', desc: 'Cada wallet pode votar uma vez' },
-              { icon: '✍️', title: 'Assinatura Crypto', desc: 'Voto verificado on-chain' },
-              { icon: '⏰', title: 'Prazo Limitado', desc: 'Propostas têm tempo para votar' },
-              { icon: '🎯', title: 'Decisão Coletiva', desc: 'Aprovadas são implementadas' },
+              { icon: '🗳️', title: '1 Wallet = 1 Vote', desc: 'Each wallet can vote once' },
+              { icon: '✍️', title: 'Crypto Signature', desc: 'Vote verified on-chain' },
+              { icon: '⏰', title: 'Limited Time', desc: 'Proposals have time to vote' },
+              { icon: '🎯', title: 'Collective Decision', desc: 'Approved ones are implemented' },
             ].map((item) => (
               <Card key={item.title} size="sm" padding="sm" className="text-center">
                 <span className="text-2xl block mb-2">{item.icon}</span>

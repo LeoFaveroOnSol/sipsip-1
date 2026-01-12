@@ -54,7 +54,7 @@ export default function TribesPage() {
       <div className="min-h-screen flex items-center justify-center p-6">
         <Card size="md" padding="lg" className="text-center">
           <div className="text-6xl mb-4 animate-pulse">⚔️</div>
-          <p className="font-mono text-sm">Carregando tribos...</p>
+          <p className="font-mono text-sm">Loading tribes...</p>
         </Card>
       </div>
     );
@@ -66,10 +66,10 @@ export default function TribesPage() {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-black uppercase italic underline decoration-4 mb-2">
-            As Tribos
+            The Tribes
           </h1>
           <p className="font-mono text-sm opacity-60">
-            Quatro linhagens. Uma guerra eterna. Escolha sabiamente.
+            Four lineages. An eternal war. Choose wisely.
           </p>
         </div>
 
@@ -95,27 +95,27 @@ export default function TribesPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
           <div>
             <h2 className="text-2xl font-black uppercase italic border-b-4 border-black pb-2 mb-6">
-              Ranking Semanal
+              Weekly Ranking
             </h2>
             <Leaderboard entries={leaderboard} showLive />
-            
+
             <Link href="/week" className="block mt-4">
               <Button variant="primary" fullWidth>
-                VER DETALHES DA GUERRA →
+                VIEW WAR DETAILS →
               </Button>
             </Link>
           </div>
 
           <div>
             <h2 className="text-2xl font-black uppercase italic border-b-4 border-black pb-2 mb-6">
-              Filosofias
+              Philosophies
             </h2>
             <div className="space-y-4">
               {[
-                { tribe: 'FOFO', text: 'O amor é a arma mais destrutiva. Cuide com carinho, domine com ternura.' },
-                { tribe: 'CAOS', text: 'Queime o roadmap. Brinque nas cinzas. A destruição criativa é o caminho.' },
-                { tribe: 'CHAD', text: 'Silêncio. Trabalho. Resultados On-Chain. Menos conversa, mais ação.' },
-                { tribe: 'CRINGE', text: 'Seja estranho. Seja livre. Seja meme. O cringe é a verdadeira arte.' },
+                { tribe: 'FOFO', text: 'Love is the most destructive weapon. Care with affection, dominate with tenderness.' },
+                { tribe: 'CAOS', text: 'Burn the roadmap. Play in the ashes. Creative destruction is the way.' },
+                { tribe: 'CHAD', text: 'Silence. Work. On-Chain Results. Less talk, more action.' },
+                { tribe: 'DEGEN', text: 'Be weird. Be free. Be meme. Degen is true art.' },
               ].map((item) => (
                 <Card key={item.tribe} size="sm" padding="sm">
                   <div className="flex items-start gap-3">
@@ -136,16 +136,16 @@ export default function TribesPage() {
           <div>
             <h2 className="text-2xl font-black uppercase italic border-b-4 border-black pb-2 mb-6 flex items-center gap-3">
               <span>{TRIBES[selectedTribe as keyof typeof TRIBES]?.emoji}</span>
-              Pets da tribo {selectedTribe}
+              {selectedTribe} Tribe Pets
             </h2>
 
             {isPetsLoading ? (
               <Card padding="lg" className="text-center">
-                <p className="font-mono text-sm animate-pulse">Buscando pets...</p>
+                <p className="font-mono text-sm animate-pulse">Searching pets...</p>
               </Card>
             ) : tribePets.length === 0 ? (
               <Card padding="lg" className="text-center">
-                <p className="font-mono text-sm opacity-50">Nenhum pet nesta tribo ainda</p>
+                <p className="font-mono text-sm opacity-50">No pets in this tribe yet</p>
               </Card>
             ) : (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">

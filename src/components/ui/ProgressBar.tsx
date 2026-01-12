@@ -8,13 +8,14 @@ import {
   LucideIcon 
 } from 'lucide-react';
 
-interface ProgressBarProps {
-  label: string;
+export interface ProgressBarProps {
+  label?: string;
   value: number;
   maxValue?: number;
-  statType: 'hunger' | 'mood' | 'energy' | 'reputation';
+  statType?: 'hunger' | 'mood' | 'energy' | 'reputation';
   showIcon?: boolean;
   size?: 'sm' | 'md' | 'lg';
+  colorClass?: string;
 }
 
 const STAT_CONFIG: Record<string, { icon: LucideIcon; colorClass: string }> = {
@@ -24,16 +25,18 @@ const STAT_CONFIG: Record<string, { icon: LucideIcon; colorClass: string }> = {
   reputation: { icon: Crown, colorClass: 'bg-indigo-500' },
 };
 
-export function ProgressBar({ 
-  label, 
-  value, 
-  maxValue = 100, 
+export function ProgressBar({
+  label,
+  value,
+  maxValue = 100,
   statType,
   showIcon = true,
-  size = 'md'
+  size = 'md',
+  colorClass: customColorClass,
 }: ProgressBarProps) {
-  const config = STAT_CONFIG[statType];
-  const Icon = config.icon;
+  const config = statType ? STAT_CONFIG[statType] : null;
+  const Icon = config?.icon;
+  const barColor = customColorClass || config?.colorClass || 'bg-black';
   const percentage = Math.min(100, Math.max(0, (value / maxValue) * 100));
 
   const heights = {
@@ -42,18 +45,30 @@ export function ProgressBar({
     lg: 'h-6',
   };
 
+  // Simplified mode when no label/statType provided
+  if (!label && !statType) {
+    return (
+      <div className={`${heights[size]} border-2 border-black bg-white p-[2px] shadow-[2px_2px_0px_rgba(0,0,0,1)]`}>
+        <div
+          className={`h-full transition-all duration-500 ${barColor}`}
+          style={{ width: `${percentage}%` }}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="mb-4">
       <div className="flex justify-between items-end mb-1">
         <div className="flex items-center gap-2 font-black uppercase text-[10px] tracking-widest">
-          {showIcon && <Icon size={12} />}
+          {showIcon && Icon && <Icon size={12} />}
           {label}
         </div>
         <span className="font-mono text-[10px]">{Math.floor(value)}%</span>
       </div>
       <div className={`${heights[size]} border-2 border-black bg-white p-[2px] shadow-[2px_2px_0px_rgba(0,0,0,1)]`}>
-        <div 
-          className={`h-full transition-all duration-500 ${config.colorClass}`} 
+        <div
+          className={`h-full transition-all duration-500 ${barColor}`}
           style={{ width: `${percentage}%` }}
         />
       </div>

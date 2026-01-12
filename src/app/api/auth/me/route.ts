@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/auth';
-import { getUserPetWithStats } from '@/lib/pet-logic';
+import { computeDecayedStats } from '@/lib/pet-logic';
 import { PET_FORMS } from '@/lib/constants';
 
 export async function GET() {
@@ -8,22 +8,36 @@ export async function GET() {
     const user = await getCurrentUser();
 
     if (!user) {
-      return NextResponse.json({ success: false, error: 'Não autenticado' }, { status: 401 });
+      return NextResponse.json({ success: false, error: 'Not authenticated' }, { status: 401 });
     }
 
     let petData = null;
 
     if (user.pet) {
-      const petWithStats = await getUserPetWithStats(user.id);
-      if (petWithStats) {
-        const form = PET_FORMS.find((f) => f.id === petWithStats.formId);
-        petData = {
-          ...petWithStats,
-          form: form
-            ? { name: form.name, description: form.description, spriteUrl: form.spriteUrl }
-            : null,
-        };
-      }
+      const pet = user.pet;
+      const form = PET_FORMS.find((f) => f.id === pet.formId);
+      const computedStats = computeDecayedStats(pet);
+
+      petData = {
+        id: pet.id,
+        name: pet.name,
+        tribe: pet.tribe,
+        stage: pet.stage,
+        formId: pet.formId,
+        eggSeed: pet.eggSeed,
+        hunger: pet.hunger,
+        mood: pet.mood,
+        energy: pet.energy,
+        reputation: pet.reputation,
+        isNeglected: pet.isNeglected,
+        careStreak: pet.careStreak,
+        totalActions: pet.totalActions,
+        createdAt: pet.createdAt,
+        computedStats,
+        form: form
+          ? { name: form.name, description: form.description, spriteUrl: form.spriteUrl }
+          : null,
+      };
     }
 
     return NextResponse.json({
@@ -39,7 +53,7 @@ export async function GET() {
     });
   } catch (error) {
     console.error('Me error:', error);
-    return NextResponse.json({ success: false, error: 'Erro interno' }, { status: 500 });
+    return NextResponse.json({ success: false, error: 'Internal error' }, { status: 500 });
   }
 }
 

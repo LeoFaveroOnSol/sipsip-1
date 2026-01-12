@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
 
     if (!parsed.success) {
       return NextResponse.json(
-        { success: false, error: 'Wallet inválida' },
+        { success: false, error: 'Invalid wallet' },
         { status: 400 }
       );
     }
@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
     // Validar endereço Solana
     if (!isValidSolanaAddress(wallet)) {
       return NextResponse.json(
-        { success: false, error: 'Endereço Solana inválido' },
+        { success: false, error: 'Invalid Solana address' },
         { status: 400 }
       );
     }
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
 
     if (!rateLimit.allowed) {
       return NextResponse.json(
-        { success: false, error: 'Muitas tentativas. Tente novamente em breve.' },
+        { success: false, error: 'Too many attempts. Please try again later.' },
         { status: 429 }
       );
     }
@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Nonce error:', error);
     return NextResponse.json(
-      { success: false, error: 'Erro interno' },
+      { success: false, error: 'Internal error' },
       { status: 500 }
     );
   }

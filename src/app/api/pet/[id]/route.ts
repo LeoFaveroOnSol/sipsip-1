@@ -14,7 +14,7 @@ export async function GET(
     const pet = await getPetWithStats(id);
 
     if (!pet) {
-      return NextResponse.json({ success: false, error: 'Pet não encontrado' }, { status: 404 });
+      return NextResponse.json({ success: false, error: 'Pet not found' }, { status: 404 });
     }
 
     // Buscar owner
@@ -46,7 +46,7 @@ export async function GET(
     };
 
     for (const r of reactionCounts) {
-      reactions[r.type] = r._count;
+      reactions[r.type as ReactionType] = r._count;
     }
 
     // Contar visitas
@@ -111,7 +111,7 @@ export async function GET(
     });
   } catch (error) {
     console.error('Get pet profile error:', error);
-    return NextResponse.json({ success: false, error: 'Erro interno' }, { status: 500 });
+    return NextResponse.json({ success: false, error: 'Internal error' }, { status: 500 });
   }
 }
 

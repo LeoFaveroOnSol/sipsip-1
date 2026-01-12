@@ -4,18 +4,17 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { useAuth } from '@/components/providers/AuthProvider';
-import { useProvidersReady } from '@/components/providers/ClientProviders';
 import { TribeCard } from '@/components/tribe/TribeCard';
 import { Leaderboard } from '@/components/tribe/Leaderboard';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { TRIBES } from '@/lib/constants';
 
-// Import dinâmico do SafeWalletButton para garantir que só renderize com provider
+// Dynamic import of SafeWalletButton to ensure it only renders with provider
 const SafeWalletButton = dynamic(
   () => import('@/components/layout/SafeWalletButton').then((mod) => mod.SafeWalletButton),
-  { 
-    ssr: false, 
+  {
+    ssr: false,
     loading: () => (
       <div className="h-12 w-full bg-zinc-200 animate-pulse border-4 border-black" />
     )
@@ -23,7 +22,6 @@ const SafeWalletButton = dynamic(
 );
 
 export default function HomePage() {
-  const providersReady = useProvidersReady();
   const { isAuthenticated, pet } = useAuth();
   const [leaderboard, setLeaderboard] = useState<any[]>([]);
 
@@ -38,38 +36,31 @@ export default function HomePage() {
       .catch(console.error);
   }, []);
 
-  // Renderização do CTA baseada no estado
+  // CTA rendering based on state
   const renderCTA = () => {
-    // Enquanto providers não estão prontos, mostrar placeholder
-    if (!providersReady) {
-      return (
-        <div className="h-12 w-full bg-zinc-200 animate-pulse border-4 border-black" />
-      );
-    }
-
-    // Usuário autenticado com pet
+    // Authenticated user with pet
     if (isAuthenticated && pet) {
       return (
         <Link href="/app" className="block">
           <Button variant="primary" size="lg" fullWidth>
-            VER MEU PET →
+            VIEW MY PET →
           </Button>
         </Link>
       );
     }
 
-    // Usuário autenticado sem pet
+    // Authenticated user without pet
     if (isAuthenticated && !pet) {
       return (
         <Link href="/app" className="block">
           <Button variant="primary" size="lg" fullWidth>
-            CRIAR MEU PET →
+            CREATE MY PET →
           </Button>
         </Link>
       );
     }
 
-    // Não autenticado - mostrar botão de wallet
+    // Not authenticated - show wallet button
     return <SafeWalletButton />;
   };
 
@@ -91,7 +82,7 @@ export default function HomePage() {
 
             {/* Description */}
             <p className="font-mono text-sm mb-8 border-l-4 border-black pl-4 py-2 bg-zinc-50">
-              A primeira simulação de sobrevivência tribal na Solana. Sua carteira é seu destino.
+              The first tribal survival simulation on Solana. Your wallet is your destiny.
             </p>
 
             {/* CTA */}
@@ -111,9 +102,9 @@ export default function HomePage() {
       <section className="py-12 px-4">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl font-black mb-8 uppercase italic underline decoration-4">
-            Escolha sua linhagem:
+            Choose your lineage:
           </h2>
-          
+
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
             {Object.entries(TRIBES).map(([key]) => (
               <TribeCard
@@ -133,20 +124,20 @@ export default function HomePage() {
             {/* Leaderboard */}
             <div>
               <h2 className="text-2xl font-black mb-6 uppercase italic border-b-4 border-black pb-2">
-                Guerra das Tribos
+                Tribal War
               </h2>
-              
+
               {leaderboard.length > 0 ? (
                 <Leaderboard entries={leaderboard} showLive />
               ) : (
                 <Card padding="lg">
-                  <p className="font-mono text-sm opacity-50">Carregando ranking...</p>
+                  <p className="font-mono text-sm opacity-50">Loading ranking...</p>
                 </Card>
               )}
 
               <Link href="/week" className="block mt-4">
                 <Button variant="primary" fullWidth>
-                  VER DETALHES →
+                  VIEW DETAILS →
                 </Button>
               </Link>
             </div>
@@ -154,15 +145,15 @@ export default function HomePage() {
             {/* How to Play */}
             <div>
               <h2 className="text-2xl font-black mb-6 uppercase italic border-b-4 border-black pb-2">
-                Como Jogar
+                How to Play
               </h2>
 
               <div className="space-y-4">
                 {[
-                  { step: 1, title: 'CONECTE', desc: 'Use Phantom ou Solflare' },
-                  { step: 2, title: 'ESCOLHA', desc: 'Selecione sua tribo' },
-                  { step: 3, title: 'CUIDE', desc: 'Alimente, brinque, durma' },
-                  { step: 4, title: 'DOMINE', desc: 'Vença a guerra semanal' },
+                  { step: 1, title: 'CONNECT', desc: 'Use Phantom or Solflare' },
+                  { step: 2, title: 'CHOOSE', desc: 'Select your tribe' },
+                  { step: 3, title: 'CARE', desc: 'Feed, play, sleep' },
+                  { step: 4, title: 'DOMINATE', desc: 'Win the weekly war' },
                 ].map((item) => (
                   <Card key={item.step} size="sm" padding="sm" className="flex items-center gap-4">
                     <div className="w-10 h-10 bg-black text-white flex items-center justify-center font-black">
@@ -188,17 +179,17 @@ export default function HomePage() {
               <div className="absolute top-[10%] left-[5%] text-8xl font-black rotate-12">🏛️</div>
               <div className="absolute bottom-[20%] right-[10%] text-9xl font-black -rotate-6">VOTE</div>
             </div>
-            
+
             <div className="relative">
               <h2 className="text-4xl font-black uppercase mb-4">
-                Council de Governança
+                Governance Council
               </h2>
               <p className="font-mono text-sm mb-6 max-w-md mx-auto opacity-70">
-                Vote nas propostas e ajude a moldar o futuro do jogo. Sua carteira, seu voto.
+                Vote on proposals and help shape the game's future. Your wallet, your vote.
               </p>
               <Link href="/council">
                 <Button variant="primary" size="lg">
-                  PARTICIPAR →
+                  PARTICIPATE →
                 </Button>
               </Link>
             </div>

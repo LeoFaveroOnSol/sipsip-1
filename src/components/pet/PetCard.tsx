@@ -58,7 +58,7 @@ export function PetCard({ pet, showLink = true }: PetCardProps) {
 
         {pet.isNeglected && (
           <div className="bg-black text-white px-2 py-1 text-[8px] font-mono">
-            MODO VERGONHA
+            SHAME MODE
           </div>
         )}
       </div>

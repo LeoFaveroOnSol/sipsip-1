@@ -63,18 +63,18 @@ function WalletAuthInner() {
     transition-all disabled:opacity-50
   `;
 
-  // Conectando
+  // Connecting
   if (connecting) {
     return (
       <div className="flex items-center gap-3">
         <button disabled className={buttonClass}>
-          CONECTANDO...
+          CONNECTING...
         </button>
       </div>
     );
   }
 
-  // Autenticado - mostrar link para pet e botão de logout
+  // Authenticated - show pet link and logout button
   if (isAuthenticated && connected) {
     return (
       <div className="flex items-center gap-2">
@@ -83,12 +83,12 @@ function WalletAuthInner() {
           className="bg-black text-white px-4 py-2 font-black text-[10px] uppercase tracking-widest border-4 border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all flex items-center gap-2"
         >
           <User size={14} />
-          MEU PET
+          MY PET
         </Link>
         <button
           onClick={handleDisconnect}
           className="p-2 border-2 border-black hover:bg-zinc-100 transition-colors"
-          title="Sair"
+          title="Logout"
         >
           <LogOut size={16} />
         </button>
@@ -96,7 +96,7 @@ function WalletAuthInner() {
     );
   }
 
-  // Wallet conectada mas não autenticado - mostrar botão de login
+  // Wallet connected but not authenticated - show login button
   if (connected && publicKey && !isAuthenticated) {
     const address = publicKey.toBase58();
     return (
@@ -105,19 +105,19 @@ function WalletAuthInner() {
           onClick={handleCopy}
           className="px-3 py-2 border-2 border-black font-mono text-[10px]"
         >
-          {copied ? 'COPIADO!' : `${address.slice(0, 4)}...${address.slice(-4)}`}
+          {copied ? 'COPIED!' : `${address.slice(0, 4)}...${address.slice(-4)}`}
         </button>
         <button
           onClick={login}
           disabled={isLoading}
           className={buttonClass}
         >
-          {isLoading ? '...' : 'ENTRAR'}
+          {isLoading ? '...' : 'SIGN IN'}
         </button>
         <button
           onClick={handleDisconnect}
           className="p-2 border-2 border-black hover:bg-zinc-100 transition-colors"
-          title="Desconectar"
+          title="Disconnect"
         >
           ✕
         </button>
@@ -125,27 +125,27 @@ function WalletAuthInner() {
     );
   }
 
-  // Não conectado - mostrar botão de conectar wallet
+  // Not connected - show connect wallet button
   const availableWallets = wallets.filter(w => w.readyState === 'Installed' || w.readyState === 'Loadable');
 
   return (
     <div className="relative flex items-center gap-3">
-      <button 
-        onClick={() => setShowWallets(!showWallets)} 
+      <button
+        onClick={() => setShowWallets(!showWallets)}
         className={buttonClass}
       >
-        CONECTAR WALLET
+        CONNECT WALLET
       </button>
 
       {showWallets && (
         <>
-          {/* Backdrop para fechar ao clicar fora */}
-          <div 
+          {/* Backdrop to close when clicking outside */}
+          <div
             className="fixed inset-0 z-40"
             onClick={() => setShowWallets(false)}
           />
-          
-          {/* Lista de wallets */}
+
+          {/* Wallet list */}
           <div className="absolute top-full right-0 mt-2 z-50 bg-white border-4 border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] min-w-[200px]">
             {availableWallets.length > 0 ? (
               availableWallets.map((w) => (
@@ -155,9 +155,9 @@ function WalletAuthInner() {
                   className="w-full px-4 py-3 text-left font-mono text-xs uppercase hover:bg-zinc-100 border-b border-black last:border-b-0 flex items-center gap-3"
                 >
                   {w.adapter.icon && (
-                    <img 
-                      src={w.adapter.icon} 
-                      alt={w.adapter.name} 
+                    <img
+                      src={w.adapter.icon}
+                      alt={w.adapter.name}
                       className="w-5 h-5"
                     />
                   )}
@@ -166,14 +166,14 @@ function WalletAuthInner() {
               ))
             ) : (
               <div className="px-4 py-3">
-                <p className="font-mono text-xs mb-2">Nenhuma wallet encontrada.</p>
-                <a 
-                  href="https://phantom.app/" 
-                  target="_blank" 
+                <p className="font-mono text-xs mb-2">No wallet found.</p>
+                <a
+                  href="https://phantom.app/"
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="text-xs font-bold underline"
                 >
-                  Instalar Phantom →
+                  Install Phantom →
                 </a>
               </div>
             )}
