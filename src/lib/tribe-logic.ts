@@ -274,7 +274,7 @@ export async function getOrCreateCurrentSeason() {
       { theme: 'Era do Caos', description: 'O caos reina supremo nesta temporada' },
       { theme: 'Reino Fofo', description: 'Carinho e amor dominam tudo' },
       { theme: 'Ascensão Chad', description: 'Grind e disciplina são recompensados' },
-      { theme: 'Festival Cringe', description: 'Abrace o constrangimento' },
+      { theme: 'Era Degen', description: 'Charts go up. We hold forever.' },
     ];
     const randomTheme = themes[Math.floor(Math.random() * themes.length)];
 
