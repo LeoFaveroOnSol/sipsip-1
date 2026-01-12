@@ -1,0 +1,395 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+:root {
+  /* Core colors */
+  --black: #000000;
+  --white: #ffffff;
+  --bg: #f0f0f0;
+  
+  /* Tribe: FOFO */
+  --fofo-primary: #f472b6;
+  --fofo-accent: #ec4899;
+  --fofo-bg: #fdf2f8;
+  --fofo-border: #db2777;
+  
+  /* Tribe: CAOS */
+  --caos-primary: #dc2626;
+  --caos-accent: #b91c1c;
+  --caos-bg: #18181b;
+  --caos-border: #000000;
+  
+  /* Tribe: CHAD */
+  --chad-primary: #10b981;
+  --chad-accent: #059669;
+  --chad-bg: #f5f5f4;
+  --chad-border: #064e3b;
+  
+  /* Tribe: CRINGE */
+  --cringe-primary: #8b5cf6;
+  --cringe-accent: #eab308;
+  --cringe-bg: #f5f3ff;
+  --cringe-border: #5b21b6;
+  
+  /* Fonts */
+  --font-display: 'Space Grotesk', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+}
+
+body {
+  font-family: var(--font-display);
+  font-weight: 500;
+  background: var(--bg);
+  color: var(--black);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Noise Overlay */
+.noise-overlay {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  opacity: 0.03;
+  background-image: url('https://grainy-gradients.vercel.app/noise.svg');
+}
+
+/* Scanlines */
+.scanlines {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  opacity: 0.07;
+  background-image: 
+    linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+    linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+  background-size: 100% 4px, 3px 100%;
+}
+
+/* Grid Pattern */
+.grid-pattern {
+  position: absolute;
+  inset: 0;
+  opacity: 0.1;
+  background-image: radial-gradient(circle, #000 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* Custom Scrollbar - Brutalist */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg);
+  border-left: 2px solid var(--black);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--black);
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+/* ============== BRUTALIST COMPONENTS ============== */
+
+/* Card Base */
+.brutal-card {
+  background: var(--white);
+  border: 4px solid var(--black);
+  box-shadow: 8px 8px 0px rgba(0, 0, 0, 1);
+  transition: all 0.15s ease;
+}
+
+.brutal-card-sm {
+  background: var(--white);
+  border: 2px solid var(--black);
+  box-shadow: 4px 4px 0px rgba(0, 0, 0, 1);
+}
+
+.brutal-card-lg {
+  background: var(--white);
+  border: 6px solid var(--black);
+  box-shadow: 16px 16px 0px rgba(0, 0, 0, 1);
+}
+
+.brutal-card:hover {
+  box-shadow: 4px 4px 0px rgba(0, 0, 0, 1);
+  transform: translate(4px, 4px);
+}
+
+/* Button Base */
+.brutal-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: var(--white);
+  border: 4px solid var(--black);
+  box-shadow: 4px 4px 0px rgba(0, 0, 0, 1);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: all 0.1s ease;
+}
+
+.brutal-btn:hover {
+  box-shadow: none;
+  transform: translate(4px, 4px);
+}
+
+.brutal-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.brutal-btn-primary {
+  background: var(--black);
+  color: var(--white);
+}
+
+.brutal-btn-primary:hover {
+  background: #333;
+}
+
+/* Progress Bar */
+.brutal-progress {
+  height: 1rem;
+  border: 2px solid var(--black);
+  background: var(--white);
+  padding: 2px;
+  box-shadow: 2px 2px 0px rgba(0, 0, 0, 1);
+}
+
+.brutal-progress-fill {
+  height: 100%;
+  transition: width 0.5s ease;
+}
+
+/* Input */
+.brutal-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: var(--white);
+  border: 3px solid var(--black);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1rem;
+  outline: none;
+  transition: box-shadow 0.15s ease;
+}
+
+.brutal-input:focus {
+  box-shadow: 4px 4px 0px rgba(0, 0, 0, 1);
+}
+
+.brutal-input::placeholder {
+  color: #999;
+}
+
+/* Badge */
+.brutal-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.75rem;
+  border: 2px solid var(--black);
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Tag */
+.brutal-tag {
+  position: absolute;
+  padding: 0.25rem 1rem;
+  background: #facc15;
+  border: 2px solid var(--black);
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 0.75rem;
+  font-style: italic;
+  transform: rotate(-3deg);
+}
+
+/* Terminal */
+.brutal-terminal {
+  background: var(--black);
+  border: 4px solid var(--black);
+  box-shadow: 8px 8px 0px rgba(0, 0, 0, 1);
+  color: #22c55e;
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  padding: 1rem;
+}
+
+.brutal-terminal-line {
+  opacity: 0.6;
+}
+
+.brutal-terminal-line:first-child {
+  opacity: 1;
+  color: #4ade80;
+}
+
+/* ============== TRIBE BACKGROUNDS ============== */
+
+.tribe-bg-fofo {
+  background: var(--fofo-bg);
+}
+
+.tribe-bg-caos {
+  background: var(--caos-bg);
+  color: var(--white);
+}
+
+.tribe-bg-chad {
+  background: var(--chad-bg);
+}
+
+.tribe-bg-cringe {
+  background: var(--cringe-bg);
+}
+
+/* ============== TRIBE ACCENTS ============== */
+
+.tribe-accent-fofo {
+  background: var(--fofo-primary);
+}
+
+.tribe-accent-caos {
+  background: var(--caos-primary);
+}
+
+.tribe-accent-chad {
+  background: var(--chad-primary);
+}
+
+.tribe-accent-cringe {
+  background: var(--cringe-primary);
+}
+
+/* ============== STAT COLORS ============== */
+
+.stat-hunger { background: #f97316; }
+.stat-mood { background: #38bdf8; }
+.stat-energy { background: #facc15; }
+.stat-reputation { background: #818cf8; }
+
+/* ============== ANIMATIONS ============== */
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes pulse-slow {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 2s ease-in-out infinite;
+}
+
+.animate-shake {
+  animation: shake 0.5s ease-in-out;
+}
+
+/* ============== WALLET ADAPTER OVERRIDES ============== */
+
+.wallet-adapter-button {
+  background: var(--black) !important;
+  border: 4px solid var(--black) !important;
+  border-radius: 0 !important;
+  font-family: var(--font-display) !important;
+  font-weight: 700 !important;
+  font-size: 0.75rem !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.2em !important;
+  box-shadow: 4px 4px 0px rgba(0, 0, 0, 1) !important;
+  transition: all 0.1s ease !important;
+}
+
+.wallet-adapter-button:hover {
+  box-shadow: none !important;
+  transform: translate(4px, 4px) !important;
+}
+
+.wallet-adapter-modal-wrapper {
+  background: rgba(0, 0, 0, 0.8) !important;
+}
+
+.wallet-adapter-modal-container {
+  background: var(--white) !important;
+  border: 4px solid var(--black) !important;
+  border-radius: 0 !important;
+  box-shadow: 16px 16px 0px rgba(0, 0, 0, 1) !important;
+}
+
+/* ============== UTILITIES ============== */
+
+.text-shadow-brutal {
+  text-shadow: 2px 2px 0px rgba(0, 0, 0, 1);
+}
+
+.border-brutal {
+  border: 4px solid var(--black);
+}
+
+.border-brutal-sm {
+  border: 2px solid var(--black);
+}
+
+.shadow-brutal {
+  box-shadow: 8px 8px 0px rgba(0, 0, 0, 1);
+}
+
+.shadow-brutal-sm {
+  box-shadow: 4px 4px 0px rgba(0, 0, 0, 1);
+}
+
+.shadow-brutal-lg {
+  box-shadow: 16px 16px 0px rgba(0, 0, 0, 1);
+}

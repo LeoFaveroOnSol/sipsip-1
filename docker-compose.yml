@@ -1,0 +1,51 @@
+# Docker Compose para ambiente de desenvolvimento com PostgreSQL
+# Use: docker-compose up -d
+
+version: '3.8'
+
+services:
+  # Banco de dados PostgreSQL
+  postgres:
+    image: postgres:16-alpine
+    container_name: sipsip-postgres
+    environment:
+      POSTGRES_USER: sipsip
+      POSTGRES_PASSWORD: sipsip_dev_password
+      POSTGRES_DB: sipsip
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sipsip"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # PgAdmin (opcional, para gerenciar o banco visualmente)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: sipsip-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@sipsip.dev
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    ports:
+      - "5050:80"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+  pgadmin_data:
+
+# Para usar PostgreSQL ao invés de SQLite:
+# 1. Suba os containers: docker-compose up -d
+# 2. Altere DATABASE_URL no .env:
+#    DATABASE_URL="postgresql://sipsip:sipsip_dev_password@localhost:5432/sipsip?schema=public"
+# 3. Altere o provider no schema.prisma:
+#    provider = "postgresql"
+# 4. Execute: npm run db:push

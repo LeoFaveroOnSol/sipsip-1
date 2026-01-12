@@ -1,0 +1,223 @@
+// Prisma Schema para SipSip - Tamagotchi de Tribos
+// SQLite para dev, Postgres para produção
+// Nota: SQLite não suporta enums, então usamos String
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ============== USUÁRIOS E AUTH ==============
+
+model User {
+  id            String    @id @default(cuid())
+  walletPubkey  String    @unique
+  createdAt     DateTime  @default(now())
+  lastLoginAt   DateTime  @default(now())
+  
+  sessions      Session[]
+  pet           Pet?
+  visits        Visit[]   @relation("Visitor")
+  reactions     Reaction[]
+  badges        Badge[]
+  votes         Vote[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Nonce {
+  id        String   @id @default(cuid())
+  nonce     String   @unique
+  wallet    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+// ============== PETS ==============
+// Tribe: FOFO, CAOS, CHAD, CRINGE
+// Stage: EGG, BABY, TEEN, ADULT, LEGENDARY
+
+model Pet {
+  id           String    @id @default(cuid())
+  userId       String    @unique
+  name         String
+  tribe        String    // FOFO, CAOS, CHAD, CRINGE
+  stage        String    @default("EGG") // EGG, BABY, TEEN, ADULT, LEGENDARY
+  formId       String    @default("egg_default")
+  eggSeed      Int       @default(0)
+  
+  // Stats (0-100)
+  hunger       Int       @default(50)
+  mood         Int       @default(50)
+  energy       Int       @default(50)
+  reputation   Int       @default(0)
+  
+  // Timestamps para cálculo on-read
+  lastFeedAt      DateTime @default(now())
+  lastPlayAt      DateTime @default(now())
+  lastSleepAt     DateTime @default(now())
+  lastSocializeAt DateTime @default(now())
+  lastActionAt    DateTime @default(now())
+  
+  // Streaks e progressão
+  careStreak   Int       @default(0)
+  totalActions Int       @default(0)
+  
+  // Estado especial
+  neglectedAt  DateTime?
+  isNeglected  Boolean   @default(false)
+  
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  events       PetEvent[]
+  visitsReceived Visit[] @relation("TargetPet")
+  reactions    Reaction[]
+}
+
+model PetEvent {
+  id        String   @id @default(cuid())
+  petId     String
+  type      String   // evolution, action, neglect, recovery, visit, reaction, mutation
+  payload   String   // JSON string
+  createdAt DateTime @default(now())
+  
+  pet       Pet      @relation(fields: [petId], references: [id], onDelete: Cascade)
+}
+
+// ============== SOCIAL ==============
+
+model Visit {
+  id            String   @id @default(cuid())
+  visitorUserId String
+  targetPetId   String
+  createdAt     DateTime @default(now())
+  
+  visitor       User     @relation("Visitor", fields: [visitorUserId], references: [id], onDelete: Cascade)
+  targetPet     Pet      @relation("TargetPet", fields: [targetPetId], references: [id], onDelete: Cascade)
+  
+  @@unique([visitorUserId, targetPetId, createdAt])
+}
+
+// ReactionType: LOVE, LOL, CRINGE, CHAD, RIP
+
+model Reaction {
+  id        String   @id @default(cuid())
+  userId    String
+  petId     String
+  type      String   // LOVE, LOL, CRINGE, CHAD, RIP
+  createdAt DateTime @default(now())
+  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  pet       Pet      @relation(fields: [petId], references: [id], onDelete: Cascade)
+}
+
+// ============== GUERRA DAS TRIBOS ==============
+
+model Week {
+  id           String       @id @default(cuid())
+  weekNumber   Int
+  year         Int
+  startAt      DateTime
+  endAt        DateTime
+  winnerTribe  String?      // FOFO, CAOS, CHAD, CRINGE
+  computedAt   DateTime?
+  isActive     Boolean      @default(true)
+  
+  scores       TribeScore[]
+  badges       Badge[]
+  
+  @@unique([weekNumber, year])
+}
+
+model TribeScore {
+  id              String @id @default(cuid())
+  weekId          String
+  tribe           String // FOFO, CAOS, CHAD, CRINGE
+  scoreActivity   Int    @default(0)
+  scoreSocial     Int    @default(0)
+  scoreConsistency Int   @default(0)
+  scoreEvent      Int    @default(0)
+  total           Int    @default(0)
+  
+  week            Week   @relation(fields: [weekId], references: [id], onDelete: Cascade)
+  
+  @@unique([weekId, tribe])
+}
+
+// ============== TEMPORADAS ==============
+
+model Season {
+  id           String   @id @default(cuid())
+  seasonNumber Int      @unique
+  theme        String
+  description  String
+  startAt      DateTime
+  endAt        DateTime
+  winnerTribe  String?  // FOFO, CAOS, CHAD, CRINGE
+  isActive     Boolean  @default(true)
+  
+  badges       Badge[]
+}
+
+// ============== BADGES ==============
+
+model Badge {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String   // week_winner, season_winner, mythic_form, holder, etc.
+  metadata  String   // JSON string
+  seasonId  String?
+  weekId    String?
+  createdAt DateTime @default(now())
+  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  season    Season?  @relation(fields: [seasonId], references: [id])
+  week      Week?    @relation(fields: [weekId], references: [id])
+}
+
+// ============== COUNCIL (GOVERNANÇA) ==============
+// ProposalStatus: PENDING, ACTIVE, CLOSED, EXECUTED
+// ProposalType: SEASON_THEME, NEW_FORM, LORE, EVENT
+
+model Proposal {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  type        String   // SEASON_THEME, NEW_FORM, LORE, EVENT
+  status      String   @default("PENDING") // PENDING, ACTIVE, CLOSED, EXECUTED
+  options     String   // JSON array de opções
+  startAt     DateTime
+  endAt       DateTime
+  result      String?  // JSON com resultado
+  createdAt   DateTime @default(now())
+  
+  votes       Vote[]
+}
+
+model Vote {
+  id         String   @id @default(cuid())
+  proposalId String
+  userId     String
+  choice     Int      // índice da opção escolhida
+  signature  String   // assinatura da carteira como prova
+  createdAt  DateTime @default(now())
+  
+  proposal   Proposal @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([proposalId, userId])
+}
