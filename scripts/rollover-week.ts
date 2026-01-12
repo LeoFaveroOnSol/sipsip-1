@@ -3,7 +3,8 @@
  * Executar: npm run rollover:week
  */
 
-import { PrismaClient, Tribe } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
+import { Tribe } from '../src/lib/constants';
 
 const prisma = new PrismaClient();
 
@@ -128,7 +129,7 @@ async function rolloverWeek() {
     });
 
     // Criar scores iniciais zerados
-    const tribes: Tribe[] = ['FOFO', 'CAOS', 'CHAD', 'CRINGE'];
+    const tribes: Tribe[] = ['FOFO', 'CAOS', 'CHAD', 'DEGEN'];
     for (const tribe of tribes) {
       await prisma.tribeScore.create({
         data: {
@@ -161,7 +162,7 @@ async function rolloverWeek() {
       const emoji = w.winnerTribe === 'FOFO' ? '🧸' :
                    w.winnerTribe === 'CAOS' ? '🔥' :
                    w.winnerTribe === 'CHAD' ? '🗿' :
-                   w.winnerTribe === 'CRINGE' ? '🤡' : '❓';
+                   w.winnerTribe === 'DEGEN' ? '💊' : '❓';
       console.log(`   Semana ${w.weekNumber}/${w.year}: ${emoji} ${w.winnerTribe || 'Empate'}`);
     });
   }

@@ -46,14 +46,14 @@ model Nonce {
 }
 
 // ============== PETS ==============
-// Tribe: FOFO, CAOS, CHAD, CRINGE
+// Tribe: FOFO, CAOS, CHAD, DEGEN
 // Stage: EGG, BABY, TEEN, ADULT, LEGENDARY
 
 model Pet {
   id           String    @id @default(cuid())
   userId       String    @unique
   name         String
-  tribe        String    // FOFO, CAOS, CHAD, CRINGE
+  tribe        String    // FOFO, CAOS, CHAD, DEGEN
   stage        String    @default("EGG") // EGG, BABY, TEEN, ADULT, LEGENDARY
   formId       String    @default("egg_default")
   eggSeed      Int       @default(0)
@@ -133,7 +133,7 @@ model Week {
   year         Int
   startAt      DateTime
   endAt        DateTime
-  winnerTribe  String?      // FOFO, CAOS, CHAD, CRINGE
+  winnerTribe  String?      // FOFO, CAOS, CHAD, DEGEN
   computedAt   DateTime?
   isActive     Boolean      @default(true)
   
@@ -146,7 +146,7 @@ model Week {
 model TribeScore {
   id              String @id @default(cuid())
   weekId          String
-  tribe           String // FOFO, CAOS, CHAD, CRINGE
+  tribe           String // FOFO, CAOS, CHAD, DEGEN
   scoreActivity   Int    @default(0)
   scoreSocial     Int    @default(0)
   scoreConsistency Int   @default(0)
@@ -167,7 +167,7 @@ model Season {
   description  String
   startAt      DateTime
   endAt        DateTime
-  winnerTribe  String?  // FOFO, CAOS, CHAD, CRINGE
+  winnerTribe  String?  // FOFO, CAOS, CHAD, DEGEN
   isActive     Boolean  @default(true)
   
   badges       Badge[]

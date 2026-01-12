@@ -18,7 +18,7 @@ export function Footer() {
             <span>🧸 FOFO</span>
             <span>💀 CAOS</span>
             <span>🛡️ CHAD</span>
-            <span>👻 CRINGE</span>
+            <span>💊 DEGEN</span>
           </div>
 
           {/* Credits */}

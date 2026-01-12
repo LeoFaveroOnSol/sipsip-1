@@ -158,7 +158,7 @@ export default function PetProfilePage() {
     FOFO: 'bg-pink-50',
     CAOS: 'bg-zinc-900',
     CHAD: 'bg-stone-100',
-    CRINGE: 'bg-violet-50',
+    DEGEN: 'bg-emerald-950',
   };
 
   return (
@@ -180,12 +180,13 @@ export default function PetProfilePage() {
             {/* Grid */}
             <div className="grid-pattern" />
 
-            <div className="relative">
+            <div className="relative flex flex-col items-center">
               <PetSprite
                 tribe={pet.tribe}
                 stage={pet.stage}
                 isNeglected={pet.computedStats.isNeglected}
                 size="xl"
+                use3D={true}
               />
 
               <h1 className="font-black text-3xl uppercase mt-6 mb-3">{pet.name}</h1>

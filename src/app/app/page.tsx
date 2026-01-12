@@ -232,7 +232,7 @@ export default function AppPage() {
     FOFO: 'bg-pink-50',
     CAOS: 'bg-zinc-900',
     CHAD: 'bg-stone-100',
-    CRINGE: 'bg-violet-50',
+    DEGEN: 'bg-emerald-950',
   };
 
   return (
@@ -244,7 +244,7 @@ export default function AppPage() {
           {/* Perfil */}
           <Card padding="md">
             <div className="flex items-center gap-3 mb-4">
-              <div className={`w-12 h-12 border-2 border-black flex items-center justify-center ${pet.tribe === 'FOFO' ? 'bg-pink-500' : pet.tribe === 'CAOS' ? 'bg-red-600' : pet.tribe === 'CHAD' ? 'bg-emerald-500' : 'bg-violet-500'}`}>
+              <div className={`w-12 h-12 border-2 border-black flex items-center justify-center ${pet.tribe === 'FOFO' ? 'bg-pink-500' : pet.tribe === 'CAOS' ? 'bg-red-600' : pet.tribe === 'CHAD' ? 'bg-stone-600' : 'bg-emerald-500'}`}>
                 <span className="text-xl">{tribeInfo?.emoji}</span>
               </div>
               <div>
@@ -307,12 +307,13 @@ export default function AppPage() {
               {/* Grid Background */}
               <div className="grid-pattern" />
 
-              {/* Pet */}
+              {/* Pet 3D */}
               <PetSprite
                 tribe={pet.tribe}
                 stage={pet.stage}
                 isNeglected={pet.computedStats.isNeglected}
                 size="xl"
+                use3D={true}
               />
 
               {/* Level Ticket */}

@@ -27,7 +27,7 @@ export async function GET() {
       FOFO: 0,
       CAOS: 0,
       CHAD: 0,
-      CRINGE: 0,
+      DEGEN: 0,
     };
 
     for (const week of weeks) {

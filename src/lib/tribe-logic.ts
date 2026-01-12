@@ -14,7 +14,7 @@ export interface TribeWeekScore {
 }
 
 export async function computeWeekScores(weekStart: Date, weekEnd: Date): Promise<TribeWeekScore[]> {
-  const tribes: Tribe[] = ['FOFO', 'CAOS', 'CHAD', 'CRINGE'];
+  const tribes: Tribe[] = ['FOFO', 'CAOS', 'CHAD', 'DEGEN'];
   const scores: TribeWeekScore[] = [];
 
   for (const tribe of tribes) {
@@ -273,7 +273,7 @@ export async function getOrCreateCurrentSeason() {
       { theme: 'Era do Caos', description: 'O caos reina supremo nesta temporada' },
       { theme: 'Reino Fofo', description: 'Carinho e amor dominam tudo' },
       { theme: 'Ascensão Chad', description: 'Grind e disciplina são recompensados' },
-      { theme: 'Festival Cringe', description: 'Abrace o constrangimento' },
+      { theme: 'Era Degen', description: 'Charts go up. We hold forever.' },
     ];
     const randomTheme = themes[Math.floor(Math.random() * themes.length)];
 
@@ -313,7 +313,7 @@ export async function finalizeSeason(seasonId: string): Promise<Tribe | null> {
     FOFO: 0,
     CAOS: 0,
     CHAD: 0,
-    CRINGE: 0,
+    DEGEN: 0,
   };
 
   for (const week of weeks) {

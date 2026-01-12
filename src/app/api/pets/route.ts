@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
 
     const where: Record<string, unknown> = {};
 
-    if (tribe && ['FOFO', 'CAOS', 'CHAD', 'CRINGE'].includes(tribe)) {
+    if (tribe && ['FOFO', 'CAOS', 'CHAD', 'DEGEN'].includes(tribe)) {
       where.tribe = tribe;
     }
 

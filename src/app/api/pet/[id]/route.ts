@@ -40,7 +40,7 @@ export async function GET(
     const reactions: Record<ReactionType, number> = {
       LOVE: 0,
       LOL: 0,
-      CRINGE: 0,
+      DEGEN: 0,
       CHAD: 0,
       RIP: 0,
     };

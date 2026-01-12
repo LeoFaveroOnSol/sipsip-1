@@ -1,6 +1,6 @@
 // ============== TIPOS (substituindo enums do Prisma para SQLite) ==============
 
-export type Tribe = 'FOFO' | 'CAOS' | 'CHAD' | 'CRINGE';
+export type Tribe = 'FOFO' | 'CAOS' | 'CHAD' | 'DEGEN';
 export type Stage = 'EGG' | 'BABY' | 'TEEN' | 'ADULT' | 'LEGENDARY';
 export type ReactionType = 'LOVE' | 'LOL' | 'CRINGE' | 'CHAD' | 'RIP';
 export type ProposalStatus = 'PENDING' | 'ACTIVE' | 'CLOSED' | 'EXECUTED';
@@ -33,13 +33,13 @@ export const TRIBES = {
     color: '#22c55e',
     gradient: 'from-green-500 to-emerald-400',
   },
-  CRINGE: {
-    id: 'CRINGE' as Tribe,
-    name: 'CRINGE',
-    emoji: '🤡',
-    description: 'Abraçamos o cringe e transformamos em arte',
-    color: '#eab308',
-    gradient: 'from-yellow-500 to-amber-400',
+  DEGEN: {
+    id: 'DEGEN' as Tribe,
+    name: 'DEGEN',
+    emoji: '💊',
+    description: 'Degen pill. Charts go up. We follow.',
+    color: '#00ff88',
+    gradient: 'from-emerald-400 to-green-500',
   },
 } as const;
 
@@ -154,32 +154,32 @@ export const PET_FORMS: PetForm[] = [
     isMythic: false,
   },
 
-  // CRINGE forms
+  // DEGEN forms
   {
-    id: 'cringe_baby',
-    name: 'Awkward',
-    description: 'Tão desconfortável que é adorável',
-    tribe: 'CRINGE',
+    id: 'degen_baby',
+    name: 'Pill',
+    description: 'Pequena pílula de potencial infinito',
+    tribe: 'DEGEN',
     stage: 'BABY',
-    spriteUrl: '/sprites/cringe_baby.png',
+    spriteUrl: '/sprites/degen_baby.png',
     isMythic: false,
   },
   {
-    id: 'cringe_teen',
-    name: 'Vergonha Alheia',
-    description: 'Faz você sentir cringe só de olhar',
-    tribe: 'CRINGE',
+    id: 'degen_teen',
+    name: 'Trader',
+    description: 'Já vive nos charts 24/7',
+    tribe: 'DEGEN',
     stage: 'TEEN',
-    spriteUrl: '/sprites/cringe_teen.png',
+    spriteUrl: '/sprites/degen_teen.png',
     isMythic: false,
   },
   {
-    id: 'cringe_adult',
-    name: 'Cringe Lord',
-    description: 'Rei do constrangimento. Uma obra de arte.',
-    tribe: 'CRINGE',
+    id: 'degen_adult',
+    name: 'Diamond Hands',
+    description: 'Nunca vende. Nunca dorme. Sempre hold.',
+    tribe: 'DEGEN',
     stage: 'ADULT',
-    spriteUrl: '/sprites/cringe_adult.png',
+    spriteUrl: '/sprites/degen_adult.png',
     isMythic: false,
   },
 
@@ -212,12 +212,12 @@ export const PET_FORMS: PetForm[] = [
     isMythic: false,
   },
   {
-    id: 'cringe_legendary',
-    name: 'Mega Constrangimento',
-    description: 'Tão cringe que deu a volta e virou cool',
-    tribe: 'CRINGE',
+    id: 'degen_legendary',
+    name: 'Whale',
+    description: 'Movimenta o mercado. O mercado move ele.',
+    tribe: 'DEGEN',
     stage: 'LEGENDARY',
-    spriteUrl: '/sprites/cringe_legendary.png',
+    spriteUrl: '/sprites/degen_legendary.png',
     isMythic: false,
   },
 

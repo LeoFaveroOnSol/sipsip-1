@@ -7,7 +7,7 @@ import { z } from 'zod';
 
 const createPetSchema = z.object({
   name: z.string().min(2).max(20),
-  tribe: z.enum(['FOFO', 'CAOS', 'CHAD', 'CRINGE']),
+  tribe: z.enum(['FOFO', 'CAOS', 'CHAD', 'DEGEN']),
 });
 
 // GET - Obter pet do usuário atual

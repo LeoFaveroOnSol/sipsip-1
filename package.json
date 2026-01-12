@@ -26,6 +26,7 @@
     "@solana/wallet-adapter-react-ui": "0.9.35",
     "@solana/wallet-adapter-solflare": "0.6.28",
     "@solana/web3.js": "1.91.1",
+    "@types/three": "^0.182.0",
     "bs58": "5.0.0",
     "jose": "5.2.2",
     "lucide-react": "0.468.0",
@@ -33,6 +34,7 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "rpc-websockets": "^7.5.1",
+    "three": "^0.182.0",
     "tweetnacl": "1.0.3",
     "zod": "3.22.4"
   },

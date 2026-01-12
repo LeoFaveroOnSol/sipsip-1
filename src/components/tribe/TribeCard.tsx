@@ -16,21 +16,21 @@ const TRIBE_ICONS: Record<string, LucideIcon> = {
   FOFO: Heart,
   CAOS: Skull,
   CHAD: ShieldCheck,
-  CRINGE: Ghost,
+  DEGEN: Ghost,
 };
 
 const TRIBE_STYLES: Record<string, { bg: string; accent: string; text: string }> = {
   FOFO: { bg: 'bg-pink-50', accent: 'bg-pink-500', text: 'text-pink-900' },
   CAOS: { bg: 'bg-zinc-900', accent: 'bg-red-600', text: 'text-white' },
-  CHAD: { bg: 'bg-stone-100', accent: 'bg-emerald-500', text: 'text-emerald-950' },
-  CRINGE: { bg: 'bg-violet-50', accent: 'bg-violet-500', text: 'text-violet-900' },
+  CHAD: { bg: 'bg-stone-100', accent: 'bg-stone-600', text: 'text-stone-900' },
+  DEGEN: { bg: 'bg-emerald-950', accent: 'bg-emerald-500', text: 'text-emerald-400' },
 };
 
 const TRIBE_FLAVORS: Record<string, string> = {
   FOFO: 'O amor é a arma mais destrutiva.',
   CAOS: 'Queime o roadmap. Brinque nas cinzas.',
   CHAD: 'Silêncio. Trabalho. Resultados On-Chain.',
-  CRINGE: 'Seja estranho. Seja livre. Seja meme.',
+  DEGEN: 'Charts go up. We follow. WAGMI.',
 };
 
 export function TribeCard({

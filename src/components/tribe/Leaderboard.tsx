@@ -18,8 +18,8 @@ interface LeaderboardProps {
 const TRIBE_COLORS: Record<string, string> = {
   FOFO: 'bg-pink-400',
   CAOS: 'bg-red-500',
-  CHAD: 'bg-emerald-500',
-  CRINGE: 'bg-violet-500',
+  CHAD: 'bg-stone-500',
+  DEGEN: 'bg-emerald-500',
 };
 
 export function Leaderboard({ entries, title, showLive = false }: LeaderboardProps) {

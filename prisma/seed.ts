@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 // Tipos locais (SQLite não suporta enums)
-type Tribe = 'FOFO' | 'CAOS' | 'CHAD' | 'CRINGE';
+type Tribe = 'FOFO' | 'CAOS' | 'CHAD' | 'DEGEN';
 type Stage = 'EGG' | 'BABY' | 'TEEN' | 'ADULT' | 'LEGENDARY';
 
 function getWeekBoundaries(date: Date = new Date()): { start: Date; end: Date } {
@@ -64,7 +64,7 @@ async function main() {
 
   // Criar pets (1 por usuário, distribuídos entre tribos)
   console.log('🐣 Criando pets...');
-  const tribes: Tribe[] = ['FOFO', 'CAOS', 'CHAD', 'CRINGE'];
+  const tribes: Tribe[] = ['FOFO', 'CAOS', 'CHAD', 'DEGEN'];
   const stages: Stage[] = ['EGG', 'BABY', 'TEEN', 'ADULT'];
   const petNames = [
     'Fluffster', 'Destroyer', 'Gigachad', 'Cringelord', 'Fofinho',
@@ -233,7 +233,7 @@ async function main() {
         description: 'Vote no tema que definirá a próxima temporada do SipSip!',
         type: 'SEASON_THEME',
         status: 'ACTIVE',
-        options: JSON.stringify(['Era do Caos', 'Reino Fofo', 'Ascensão Chad', 'Festival Cringe']),
+        options: JSON.stringify(['Era do Caos', 'Reino Fofo', 'Ascensão Chad', 'Era Degen']),
         startAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
         endAt: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
       },

@@ -115,7 +115,7 @@ export default function TribesPage() {
                 { tribe: 'FOFO', text: 'O amor é a arma mais destrutiva. Cuide com carinho, domine com ternura.' },
                 { tribe: 'CAOS', text: 'Queime o roadmap. Brinque nas cinzas. A destruição criativa é o caminho.' },
                 { tribe: 'CHAD', text: 'Silêncio. Trabalho. Resultados On-Chain. Menos conversa, mais ação.' },
-                { tribe: 'CRINGE', text: 'Seja estranho. Seja livre. Seja meme. O cringe é a verdadeira arte.' },
+                { tribe: 'DEGEN', text: 'Charts go up. We follow. Diamond hands. WAGMI.' },
               ].map((item) => (
                 <Card key={item.tribe} size="sm" padding="sm">
                   <div className="flex items-start gap-3">

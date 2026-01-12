@@ -22,7 +22,7 @@ export function PetCard({ pet, showLink = true }: PetCardProps) {
     FOFO: 'bg-pink-50',
     CAOS: 'bg-zinc-900 text-white',
     CHAD: 'bg-stone-50',
-    CRINGE: 'bg-violet-50',
+    DEGEN: 'bg-emerald-950 text-emerald-400',
   };
 
   const content = (
