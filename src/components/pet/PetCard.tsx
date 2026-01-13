@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { PetSprite } from '@/components/pet/PetSprite';
 import { TRIBES } from '@/lib/constants';
+import { TribeIcon } from '@/components/ui/TribeIcon';
 
 interface PetCardProps {
   pet: {
@@ -52,7 +53,7 @@ export function PetCard({ pet, showLink = true }: PetCardProps) {
             font-mono text-[8px] uppercase
             ${pet.tribe === 'CAOS' ? 'bg-red-600' : 'bg-white'}
           `}>
-            {tribeInfo?.emoji} {tribeInfo?.name}
+            <TribeIcon tribe={pet.tribe} size={10} /> {tribeInfo?.name}
           </div>
         </div>
 

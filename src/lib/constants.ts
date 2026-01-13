@@ -8,11 +8,19 @@ export type ProposalType = 'SEASON_THEME' | 'NEW_FORM' | 'LORE' | 'EVENT';
 
 // ============== TRIBES ==============
 
+// Icon names from lucide-react for each tribe
+export const TRIBE_ICON_NAMES = {
+  FOFO: 'Heart',
+  CAOS: 'Flame',
+  CHAD: 'Shield',
+  DEGEN: 'Zap',
+} as const;
+
 export const TRIBES = {
   FOFO: {
     id: 'FOFO' as Tribe,
     name: 'FOFO',
-    emoji: '🧸',
+    icon: 'Heart',
     description: 'The softies dominate with affection and unconditional love',
     color: '#ec4899',
     gradient: 'from-pink-500 to-rose-400',
@@ -20,7 +28,7 @@ export const TRIBES = {
   CAOS: {
     id: 'CAOS' as Tribe,
     name: 'CAOS',
-    emoji: '🔥',
+    icon: 'Flame',
     description: 'Creative destruction is our philosophy of life',
     color: '#ef4444',
     gradient: 'from-red-500 to-orange-400',
@@ -28,7 +36,7 @@ export const TRIBES = {
   CHAD: {
     id: 'CHAD' as Tribe,
     name: 'CHAD',
-    emoji: '🗿',
+    icon: 'Shield',
     description: 'Sigma grindset. Silence. Work. Victory.',
     color: '#22c55e',
     gradient: 'from-green-500 to-emerald-400',
@@ -36,7 +44,7 @@ export const TRIBES = {
   DEGEN: {
     id: 'DEGEN' as Tribe,
     name: 'DEGEN',
-    emoji: '🤡',
+    icon: 'Zap',
     description: 'We embrace the degen life and transform it into art',
     color: '#eab308',
     gradient: 'from-yellow-500 to-amber-400',

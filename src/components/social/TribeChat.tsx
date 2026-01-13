@@ -5,6 +5,7 @@ import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Send, MessageSquare, Users } from 'lucide-react';
 import { TRIBES } from '@/lib/constants';
+import { TribeIcon } from '@/components/ui/TribeIcon';
 
 interface ChatMessage {
   id: string;
@@ -187,7 +188,7 @@ export function TribeChat({ tribe, compact = false }: TribeChatProps) {
               selectedTribe === t ? 'bg-black text-white' : `bg-white hover:${getTribeBg(t)}`
             }`}
           >
-            {TRIBES[t as keyof typeof TRIBES].emoji} {t}
+            <span className="flex items-center gap-1"><TribeIcon tribe={t} size={12} /> {t}</span>
           </button>
         ))}
       </div>
@@ -204,7 +205,7 @@ export function TribeChat({ tribe, compact = false }: TribeChatProps) {
           messages.map((msg) => (
             <div key={msg.id} className={`p-2 border-2 border-black ${getTribeBg(msg.tribe)}`}>
               <div className="flex items-center gap-2 mb-1">
-                <span className="text-lg">{TRIBES[msg.tribe as keyof typeof TRIBES]?.emoji}</span>
+                <TribeIcon tribe={msg.tribe} size={18} />
                 <span className={`font-black text-sm ${getTribeColor(msg.tribe)}`}>
                   {msg.petName}
                 </span>

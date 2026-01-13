@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getCurrentUser } from '@/lib/auth';
-import { verifyTokenTransfer, getTreasuryInfo, SIP_DECIMALS } from '@/lib/token';
+import { verifyTokenTransfer, getTreasuryInfo, SIP_DECIMALS, processTokenFeedWithBurn, BURN_PERCENTAGE } from '@/lib/token';
 import { rollForSkill } from '@/lib/skill-logic';
 import { getTierName, getTierColor } from '@/lib/constants';
 
@@ -69,6 +69,7 @@ export async function POST(req: NextRequest) {
     }
 
     const amount = verification.amountUI || 0;
+    const rawAmount = verification.amount || 0;
 
     if (amount < 1000) {
       return NextResponse.json(
@@ -77,11 +78,14 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Process with automatic burn (10% of received tokens)
+    const burnResult = await processTokenFeedWithBurn(rawAmount, true);
+
     // Calculate power gain (1 power per 1000 $SIP - adjusted for low market cap tokens)
     const powerGained = Math.floor(amount / 1000);
 
-    // 10% is burned (already sent to treasury, we just track the effective amount)
-    const burnedAmount = amount * 0.1;
+    // Track actual burned amount (from burn result)
+    const burnedAmount = burnResult.burnedAmount / Math.pow(10, SIP_DECIMALS);
 
     // Update pet stats (scaled for larger token amounts)
     const newHunger = Math.min(100, (pet.hunger || 50) + Math.floor(amount / 2000));
@@ -174,6 +178,9 @@ export async function POST(req: NextRequest) {
 
     // Build response message
     let message = `Fed ${amount.toLocaleString()} $SIP! +${powerGained} Power`;
+    if (burnedAmount > 0) {
+      message += ` | 🔥 ${burnedAmount.toLocaleString()} burned`;
+    }
     if (skillAcquired) {
       if (skillAcquired.isNewSkill) {
         message += ` | NEW SKILL: ${skillAcquired.emoji} ${skillAcquired.name} (${skillAcquired.tierName})!`;
@@ -188,6 +195,9 @@ export async function POST(req: NextRequest) {
         amountFed: amount,
         powerGained,
         burnedAmount,
+        burnPercentage: BURN_PERCENTAGE,
+        burnSignature: burnResult.burnSignature,
+        burnError: burnResult.burnError,
         newHunger,
         newMood,
         newPower,

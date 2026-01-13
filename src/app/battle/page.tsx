@@ -19,6 +19,7 @@ import { Tag } from '@/components/ui/Tag';
 import { Terminal } from '@/components/ui/Terminal';
 import { Swords, Trophy, Zap, Target, RefreshCw, ExternalLink, Coins } from 'lucide-react';
 import { TRIBES, BATTLE_CONFIG } from '@/lib/constants';
+import { TribeIcon } from '@/components/ui/TribeIcon';
 
 interface TreasuryInfo {
   treasuryWallet: string;
@@ -613,13 +614,13 @@ export default function BattlePage() {
                         <Card key={battle.id} size="sm" padding="md" hover>
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-4">
-                              <div className={`w-14 h-14 border-2 border-black flex items-center justify-center text-2xl ${
+                              <div className={`w-14 h-14 border-2 border-black flex items-center justify-center ${
                                 battle.challenger.pet.tribe === 'FOFO' ? 'bg-pink-200' :
                                 battle.challenger.pet.tribe === 'CAOS' ? 'bg-red-200' :
                                 battle.challenger.pet.tribe === 'CHAD' ? 'bg-emerald-200' :
                                 'bg-violet-200'
                               }`}>
-                                {tribeInfo?.emoji}
+                                <TribeIcon tribe={battle.challenger.pet.tribe} size={28} />
                               </div>
                               <div>
                                 <div className="font-black uppercase">{battle.challenger.pet.name}</div>

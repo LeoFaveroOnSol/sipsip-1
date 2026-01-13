@@ -6,7 +6,7 @@
 
 import { prisma } from './prisma';
 import { BATTLE_CONFIG, TRIBE_BONUSES, Tribe } from './constants';
-import { TokenEconomics, SIP_DECIMALS } from './token';
+import { TokenEconomics, SIP_DECIMALS, burnTokensFromTreasury } from './token';
 import { getOrCreateStake, updateTribeGuildStats } from './staking';
 import {
   calculateSkillEffects,
@@ -689,6 +689,19 @@ export async function acceptBattle(
       battle.betAmount
     );
 
+    // Execute real token burn on blockchain (10% of pot)
+    let burnTxSignature: string | undefined;
+    if (result.burnedAmount > 0) {
+      console.log(`🔥 Executing battle burn: ${result.burnedAmount / Math.pow(10, SIP_DECIMALS)} $SIP`);
+      const burnResult = await burnTokensFromTreasury(result.burnedAmount);
+      if (burnResult.success) {
+        burnTxSignature = burnResult.signature;
+        console.log(`✅ Battle burn successful: ${burnResult.signature}`);
+      } else {
+        console.error(`❌ Battle burn failed: ${burnResult.error}`);
+      }
+    }
+
     // Update battle record
     await prisma.battle.update({
       where: { id: battleId },
@@ -705,7 +718,7 @@ export async function acceptBattle(
         status: 'COMPLETED',
         matchedAt: new Date(),
         completedAt: new Date(),
-        settleTxSignature: txSignature,
+        settleTxSignature: burnTxSignature || txSignature,
       },
     });
 

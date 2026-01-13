@@ -1,6 +1,8 @@
 'use client';
 
+import { Crown } from 'lucide-react';
 import { TRIBES } from '@/lib/constants';
+import { TribeIcon } from '@/components/ui/TribeIcon';
 
 interface LeaderboardEntry {
   tribe: string;
@@ -50,9 +52,9 @@ export function Leaderboard({ entries, title, showLive = false }: LeaderboardPro
               <div className="flex justify-between text-[10px] font-black italic">
                 <span className="flex items-center gap-2">
                   <span className="w-5 text-center">{entry.position}.</span>
-                  <span>{tribeInfo?.emoji}</span>
+                  <TribeIcon tribe={entry.tribe} size={14} />
                   <span className="uppercase">{entry.tribe}</span>
-                  {entry.isWinner && <span>👑</span>}
+                  {entry.isWinner && <Crown size={12} className="text-yellow-500" />}
                 </span>
                 <span className="font-mono">{entry.total.toLocaleString()} pts</span>
               </div>

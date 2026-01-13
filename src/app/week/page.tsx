@@ -5,7 +5,8 @@ import { Leaderboard } from '@/components/tribe/Leaderboard';
 import { Card } from '@/components/ui/Card';
 import { ProgressBar } from '@/components/ui/ProgressBar';
 import { TRIBES, SCORING } from '@/lib/constants';
-import { Crown } from 'lucide-react';
+import { Gamepad2, MessageCircle, Flame, Star } from 'lucide-react';
+import { TribeIcon } from '@/components/ui/TribeIcon';
 
 interface WeekData {
   currentWeek: {
@@ -136,7 +137,7 @@ export default function WeekPage() {
                       }
                     `}
                   >
-                    {tribe.emoji}
+                    <TribeIcon tribe={key} size={20} />
                   </button>
                 ))}
               </div>
@@ -148,9 +149,7 @@ export default function WeekPage() {
             {selectedScore ? (
               <Card padding="md">
                 <div className="flex items-center gap-3 mb-6">
-                  <span className="text-3xl">
-                    {TRIBES[selectedTribe as keyof typeof TRIBES]?.emoji}
-                  </span>
+                  <TribeIcon tribe={selectedTribe || 'FOFO'} size={32} />
                   <h2 className="font-black text-xl uppercase">
                     {TRIBES[selectedTribe as keyof typeof TRIBES]?.name}
                   </h2>
@@ -158,14 +157,14 @@ export default function WeekPage() {
 
                 <div className="space-y-3">
                   {[
-                    { key: 'Activity', value: selectedScore.scoreActivity, icon: '🎮', label: 'Activity' },
-                    { key: 'Social', value: selectedScore.scoreSocial, icon: '💬', label: 'Social' },
-                    { key: 'Consistency', value: selectedScore.scoreConsistency, icon: '🔥', label: 'Consistency' },
-                    { key: 'Event', value: selectedScore.scoreEvent, icon: '⭐', label: 'Events' },
+                    { key: 'Activity', value: selectedScore.scoreActivity, Icon: Gamepad2, label: 'Activity' },
+                    { key: 'Social', value: selectedScore.scoreSocial, Icon: MessageCircle, label: 'Social' },
+                    { key: 'Consistency', value: selectedScore.scoreConsistency, Icon: Flame, label: 'Consistency' },
+                    { key: 'Event', value: selectedScore.scoreEvent, Icon: Star, label: 'Events' },
                   ].map((item) => (
                     <div key={item.key} className="flex justify-between items-center p-3 border-2 border-black bg-zinc-50">
                       <span className="font-mono text-xs flex items-center gap-2">
-                        {item.icon} {item.label}
+                        <item.Icon size={14} /> {item.label}
                       </span>
                       <span className="font-black">{item.value}</span>
                     </div>
@@ -194,10 +193,10 @@ export default function WeekPage() {
                 How does it work?
               </h3>
               <div className="space-y-2 font-mono text-[10px] opacity-70">
-                <p>🎮 Activity ({SCORING.weights.activity}%)</p>
-                <p>💬 Social ({SCORING.weights.social}%)</p>
-                <p>🔥 Consistency ({SCORING.weights.consistency}%)</p>
-                <p>⭐ Events ({SCORING.weights.event}%)</p>
+                <p className="flex items-center gap-2"><Gamepad2 size={12} /> Activity ({SCORING.weights.activity}%)</p>
+                <p className="flex items-center gap-2"><MessageCircle size={12} /> Social ({SCORING.weights.social}%)</p>
+                <p className="flex items-center gap-2"><Flame size={12} /> Consistency ({SCORING.weights.consistency}%)</p>
+                <p className="flex items-center gap-2"><Star size={12} /> Events ({SCORING.weights.event}%)</p>
               </div>
             </Card>
           </div>
@@ -211,10 +210,15 @@ export default function WeekPage() {
             </h2>
             <div className="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-8 gap-4">
               {history.map((week) => {
-                const winner = week.winnerTribe ? TRIBES[week.winnerTribe as keyof typeof TRIBES] : null;
                 return (
                   <Card key={week.id} size="sm" padding="sm" className="text-center">
-                    <span className="text-2xl block mb-2">{winner?.emoji || '🤷'}</span>
+                    <span className="block mb-2">
+                      {week.winnerTribe ? (
+                        <TribeIcon tribe={week.winnerTribe} size={24} />
+                      ) : (
+                        <span className="text-2xl">—</span>
+                      )}
+                    </span>
                     <div className="font-black text-xs">W{week.weekNumber}</div>
                     <div className="font-mono text-[8px] opacity-50">{week.year}</div>
                   </Card>

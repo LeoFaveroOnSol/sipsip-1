@@ -1,6 +1,6 @@
 'use client';
 
-import { Heart, Skull, ShieldCheck, Ghost, LucideIcon } from 'lucide-react';
+import { Heart, Flame, Shield, Zap, LucideIcon } from 'lucide-react';
 import { TRIBES } from '@/lib/constants';
 
 interface TribeCardProps {
@@ -14,9 +14,9 @@ interface TribeCardProps {
 
 const TRIBE_ICONS: Record<string, LucideIcon> = {
   FOFO: Heart,
-  CAOS: Skull,
-  CHAD: ShieldCheck,
-  DEGEN: Ghost,
+  CAOS: Flame,
+  CHAD: Shield,
+  DEGEN: Zap,
 };
 
 const TRIBE_STYLES: Record<string, { bg: string; accent: string; text: string }> = {

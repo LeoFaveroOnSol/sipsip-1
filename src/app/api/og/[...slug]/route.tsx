@@ -3,6 +3,14 @@ import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { TRIBES, SHARE_CARDS, PET_FORMS } from '@/lib/constants';
 
+// Unicode symbols for OG images (can't use React components here)
+const TRIBE_SYMBOLS: Record<string, string> = {
+  FOFO: '♥',
+  CAOS: '🔥',
+  CHAD: '🛡',
+  DEGEN: '⚡',
+};
+
 export const runtime = 'edge';
 
 export async function GET(
@@ -151,7 +159,7 @@ async function generateShareCard(cardType: string, request: NextRequest) {
           }}
         >
           <div style={{ fontSize: '80px', marginBottom: '30px' }}>
-            {tribeInfo?.emoji || '🥚'}
+            {TRIBE_SYMBOLS[tribeInfo?.id || ''] || '🥚'}
           </div>
           <div
             style={{
@@ -236,7 +244,7 @@ async function generateTribeCard(tribe: string) {
         }}
       >
         <div style={{ fontSize: '120px', marginBottom: '30px' }}>
-          {tribeInfo.emoji}
+          {TRIBE_SYMBOLS[tribeInfo.id] || '⚡'}
         </div>
         <div
           style={{

@@ -17,7 +17,8 @@ import { Button } from '@/components/ui/Button';
 import { Terminal } from '@/components/ui/Terminal';
 import { TRIBES, PET_FORMS, Tribe } from '@/lib/constants';
 import { PetState } from '@/lib/pet-system-3d';
-import { AlertTriangle, Crown } from 'lucide-react';
+import { AlertTriangle, Flame } from 'lucide-react';
+import { TribeIcon } from '@/components/ui/TribeIcon';
 
 interface PetData {
   id: string;
@@ -284,7 +285,7 @@ export default function AppPage() {
           <Card padding="md">
             <div className="flex items-center gap-3 mb-4">
               <div className={`w-12 h-12 border-2 border-black flex items-center justify-center ${pet.tribe === 'FOFO' ? 'bg-pink-500' : pet.tribe === 'CAOS' ? 'bg-red-600' : pet.tribe === 'CHAD' ? 'bg-emerald-500' : 'bg-violet-500'}`}>
-                <span className="text-xl">{tribeInfo?.emoji}</span>
+                <TribeIcon tribe={pet.tribe} size={24} className="text-white" />
               </div>
               <div>
                 <h4 className="font-black text-xl leading-none uppercase">{pet.name}</h4>
@@ -298,7 +299,7 @@ export default function AppPage() {
             </div>
             <div className="flex justify-between items-center">
               <div className="text-xs font-black uppercase">Care Streak</div>
-              <div className="font-mono">{pet.careStreak} 🔥</div>
+              <div className="font-mono flex items-center gap-1">{pet.careStreak} <Flame size={14} className="text-orange-500" /></div>
             </div>
           </Card>
 

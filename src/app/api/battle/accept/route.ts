@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/auth';
 import { acceptBattle } from '@/lib/battle-logic';
 import { prisma } from '@/lib/prisma';
-import { parseSipAmount } from '@/lib/token';
+import { verifyTokenTransfer, SIP_DECIMALS } from '@/lib/token';
 
 // POST - Accept a battle challenge
 export async function POST(request: NextRequest) {
@@ -26,6 +26,85 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // SECURITY: Transaction signature is REQUIRED
+    if (!txSignature) {
+      return NextResponse.json(
+        { success: false, error: 'Transaction signature is required. Please send tokens first.' },
+        { status: 400 }
+      );
+    }
+
+    // Get the battle to know required bet amount
+    const battle = await prisma.battle.findUnique({
+      where: { id: battleId },
+    });
+
+    if (!battle) {
+      return NextResponse.json(
+        { success: false, error: 'Battle not found' },
+        { status: 404 }
+      );
+    }
+
+    if (battle.status !== 'PENDING') {
+      return NextResponse.json(
+        { success: false, error: 'Battle is no longer available' },
+        { status: 400 }
+      );
+    }
+
+    if (battle.challengerId === user.id) {
+      return NextResponse.json(
+        { success: false, error: 'You cannot accept your own battle' },
+        { status: 400 }
+      );
+    }
+
+    // SECURITY: Check if this transaction was already used (prevent double-spending)
+    const existingBattleWithTx = await prisma.battle.findFirst({
+      where: {
+        OR: [
+          { escrowPda: txSignature },
+          { settleTxSignature: txSignature },
+        ],
+      },
+    });
+
+    if (existingBattleWithTx) {
+      return NextResponse.json(
+        { success: false, error: 'This transaction has already been used' },
+        { status: 400 }
+      );
+    }
+
+    // SECURITY: Verify the token transfer on-chain
+    const verification = await verifyTokenTransfer(
+      txSignature,
+      user.walletPubkey // Sender must be the authenticated user
+    );
+
+    if (!verification.valid) {
+      return NextResponse.json(
+        { success: false, error: verification.error || 'Transaction verification failed' },
+        { status: 400 }
+      );
+    }
+
+    // SECURITY: Verify the defender sent the same bet amount as the challenger
+    const requiredAmount = battle.betAmount;
+    const actualAmount = verification.amount || 0;
+
+    // Allow 1% tolerance for rounding
+    const tolerance = requiredAmount * 0.01;
+    if (Math.abs(actualAmount - requiredAmount) > tolerance) {
+      const requiredUI = requiredAmount / Math.pow(10, SIP_DECIMALS);
+      const actualUI = actualAmount / Math.pow(10, SIP_DECIMALS);
+      return NextResponse.json(
+        { success: false, error: `Amount mismatch. Battle requires ${requiredUI.toLocaleString()} $SIP but you sent ${actualUI.toLocaleString()} $SIP` },
+        { status: 400 }
+      );
+    }
+
     // Get user's pet
     const pet = await prisma.pet.findUnique({
       where: { userId: user.id },
@@ -45,7 +124,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Accept battle
+    // Accept battle with verified transaction
     const result = await acceptBattle(battleId, user.id, pet.id, txSignature);
 
     if (!result.success) {
@@ -70,6 +149,7 @@ export async function POST(request: NextRequest) {
         prizePool: result.result?.prizeAmount,
         burnedAmount: result.result?.burnedAmount,
         replayData: result.result?.replayData,
+        txSignature,
         message: result.result?.winnerId === user.id
           ? 'Victory! You won the battle!'
           : 'Defeat! Better luck next time.',

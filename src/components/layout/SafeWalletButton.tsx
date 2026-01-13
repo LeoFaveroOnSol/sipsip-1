@@ -2,32 +2,30 @@
 
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
-import { useProvidersReady } from '@/components/providers/ClientProviders';
 
 // Import dinâmico do componente que usa hooks de wallet
 const WalletButtonInner = dynamic(
   () => import('./WalletButtonInner').then((mod) => mod.WalletButtonInner),
-  { 
+  {
     ssr: false,
     loading: () => (
-      <div className="h-10 w-40 bg-zinc-200 animate-pulse border-4 border-black" />
+      <div className="h-12 w-full bg-zinc-200 animate-pulse border-4 border-black" />
     )
   }
 );
 
-// Componente exportado que verifica se os providers estão prontos
+// Componente exportado que verifica se está montado no cliente
 export function SafeWalletButton() {
-  const providersReady = useProvidersReady();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // Se não está montado ou providers não estão prontos, mostrar placeholder
-  if (!mounted || !providersReady) {
+  // Se não está montado, mostrar placeholder
+  if (!mounted) {
     return (
-      <div className="h-10 w-40 bg-zinc-200 animate-pulse border-4 border-black" />
+      <div className="h-12 w-full bg-zinc-200 animate-pulse border-4 border-black" />
     );
   }
 

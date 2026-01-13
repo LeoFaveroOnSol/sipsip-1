@@ -38,7 +38,7 @@ export async function GET() {
         },
         leaderboard: leaderboard.map((entry) => ({
           tribe: entry.tribe,
-          emoji: entry.tribeInfo.emoji,
+          icon: entry.tribeInfo.icon,
           name: entry.tribeInfo.name,
           color: entry.tribeInfo.color,
           total: entry.total,

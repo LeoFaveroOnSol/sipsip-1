@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/Button';
 import { TRIBES, PET_FORMS } from '@/lib/constants';
 import { useAuth } from '@/components/providers/AuthProvider';
 import { Share2, Eye, MessageSquare, Flame } from 'lucide-react';
+import { TribeIcon } from '@/components/ui/TribeIcon';
 
 interface PetData {
   id: string;
@@ -195,7 +196,7 @@ export default function PetProfilePage() {
                 border-2 border-black font-mono text-xs uppercase
                 ${pet.tribe === 'CAOS' ? 'bg-red-600 text-white' : 'bg-white'}
               `}>
-                {tribeInfo?.emoji} {tribeInfo?.name}
+                <TribeIcon tribe={pet.tribe} size={16} /> {tribeInfo?.name}
               </div>
 
               {/* Form */}

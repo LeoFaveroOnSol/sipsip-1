@@ -485,3 +485,150 @@ export function getTreasuryInfo() {
     configured: !!TREASURY_WALLET,
   };
 }
+
+// Burn configuration
+export const BURN_PERCENTAGE = parseInt(process.env.BURN_PERCENTAGE || '10', 10);
+
+/**
+ * Calculate burn amount based on received tokens
+ */
+export function calculateBurnAmount(receivedAmount: number): number {
+  return Math.floor(receivedAmount * (BURN_PERCENTAGE / 100));
+}
+
+/**
+ * Burn tokens from treasury wallet (SERVER-SIDE ONLY)
+ * This function requires TREASURY_PRIVATE_KEY in env
+ */
+export async function burnTokensFromTreasury(
+  amountToBurn: number
+): Promise<{
+  success: boolean;
+  signature?: string;
+  burnedAmount?: number;
+  error?: string;
+}> {
+  // Import server-side dependencies
+  const { Keypair, Transaction, sendAndConfirmTransaction } = await import('@solana/web3.js');
+  const {
+    createBurnInstruction,
+    getAssociatedTokenAddressSync,
+    TOKEN_PROGRAM_ID,
+    TOKEN_2022_PROGRAM_ID,
+    getMint,
+  } = await import('@solana/spl-token');
+  const bs58 = await import('bs58');
+
+  const privateKey = process.env.TREASURY_PRIVATE_KEY;
+
+  if (!privateKey) {
+    console.error('TREASURY_PRIVATE_KEY not configured');
+    return { success: false, error: 'Treasury private key not configured' };
+  }
+
+  if (!SIP_TOKEN_MINT) {
+    return { success: false, error: 'Token mint not configured' };
+  }
+
+  if (amountToBurn <= 0) {
+    return { success: false, error: 'Invalid burn amount' };
+  }
+
+  try {
+    const connection = getConnection();
+
+    // Decode treasury keypair from base58 private key
+    const treasuryKeypair = Keypair.fromSecretKey(bs58.default.decode(privateKey));
+    const tokenMint = new PublicKey(SIP_TOKEN_MINT);
+
+    // Detect token program
+    const mintInfo = await connection.getAccountInfo(tokenMint);
+    const tokenProgramId = mintInfo?.owner.equals(TOKEN_2022_PROGRAM_ID)
+      ? TOKEN_2022_PROGRAM_ID
+      : TOKEN_PROGRAM_ID;
+
+    // Get treasury's token account (ATA)
+    const treasuryATA = getAssociatedTokenAddressSync(
+      tokenMint,
+      treasuryKeypair.publicKey,
+      false,
+      tokenProgramId
+    );
+
+    // Create burn instruction
+    const burnIx = createBurnInstruction(
+      treasuryATA,           // Token account to burn from
+      tokenMint,             // Token mint
+      treasuryKeypair.publicKey, // Owner of token account
+      amountToBurn,          // Amount to burn (in raw units)
+      [],                    // Multi-signers (none)
+      tokenProgramId         // Token program
+    );
+
+    // Build and send transaction
+    const transaction = new Transaction().add(burnIx);
+
+    const signature = await sendAndConfirmTransaction(
+      connection,
+      transaction,
+      [treasuryKeypair],
+      { commitment: 'confirmed' }
+    );
+
+    console.log(`🔥 Burned ${amountToBurn / Math.pow(10, SIP_DECIMALS)} $SIP tokens`);
+    console.log(`   Signature: ${signature}`);
+
+    return {
+      success: true,
+      signature,
+      burnedAmount: amountToBurn,
+    };
+  } catch (error) {
+    console.error('Error burning tokens:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error during burn',
+    };
+  }
+}
+
+/**
+ * Process token feed with automatic burn
+ * Call this after verifying a token transfer to treasury
+ */
+export async function processTokenFeedWithBurn(
+  receivedAmount: number,
+  enableBurn: boolean = true
+): Promise<{
+  receivedAmount: number;
+  burnedAmount: number;
+  netAmount: number;
+  burnSignature?: string;
+  burnError?: string;
+}> {
+  const burnAmount = enableBurn ? calculateBurnAmount(receivedAmount) : 0;
+  const netAmount = receivedAmount - burnAmount;
+
+  let burnSignature: string | undefined;
+  let burnError: string | undefined;
+
+  if (enableBurn && burnAmount > 0) {
+    const burnResult = await burnTokensFromTreasury(burnAmount);
+
+    if (burnResult.success) {
+      burnSignature = burnResult.signature;
+      console.log(`✅ Auto-burn successful: ${burnAmount / Math.pow(10, SIP_DECIMALS)} $SIP`);
+    } else {
+      burnError = burnResult.error;
+      console.error(`❌ Auto-burn failed: ${burnResult.error}`);
+    }
+  }
+
+  return {
+    receivedAmount,
+    burnedAmount: burnSignature ? burnAmount : 0, // Only count if successful
+    netAmount: burnSignature ? netAmount : receivedAmount,
+    burnSignature,
+    burnError,
+  };
+}

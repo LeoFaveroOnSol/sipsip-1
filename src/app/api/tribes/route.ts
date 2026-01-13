@@ -22,7 +22,7 @@ export async function GET() {
         .sort((a, b) => b.total - a.total)
         .map((score, index) => ({
           tribe: score.tribe,
-          emoji: TRIBES[score.tribe as keyof typeof TRIBES]?.emoji,
+          icon: TRIBES[score.tribe as keyof typeof TRIBES]?.icon,
           name: TRIBES[score.tribe as keyof typeof TRIBES]?.name,
           color: TRIBES[score.tribe as keyof typeof TRIBES]?.color,
           gradient: TRIBES[score.tribe as keyof typeof TRIBES]?.gradient,
@@ -35,7 +35,7 @@ export async function GET() {
       const leaderboardData = await getWeekLeaderboard(week.id);
       leaderboard = leaderboardData.map((entry) => ({
         tribe: entry.tribe,
-        emoji: entry.tribeInfo.emoji,
+        icon: entry.tribeInfo.icon,
         name: entry.tribeInfo.name,
         color: entry.tribeInfo.color,
         gradient: entry.tribeInfo.gradient,
@@ -59,7 +59,7 @@ export async function GET() {
         },
         leaderboard: leaderboard.map((entry) => ({
           tribe: entry.tribe,
-          emoji: entry.emoji,
+          icon: entry.icon,
           name: entry.name,
           color: entry.color,
           gradient: entry.gradient,

@@ -430,7 +430,7 @@ export function TokenFeeding({ onFeedComplete, currentPower = 0 }: TokenFeedingP
                   <span className="text-xs font-black">SKILL</span>
                 </div>
                 <span className="font-black text-purple-600">
-                  100% GARANTIDO!
+                  100% GUARANTEED!
                 </span>
               </div>
             )}
@@ -440,7 +440,7 @@ export function TokenFeeding({ onFeedComplete, currentPower = 0 }: TokenFeedingP
         {/* Info */}
         <div className="text-[10px] font-mono opacity-50 space-y-1">
           <p>* 1 Power per 1,000 $SIP fed</p>
-          <p>* 10k+ $SIP = SKILL GARANTIDO!</p>
+          <p>* 10k+ $SIP = SKILL GUARANTEED!</p>
           <p>* Tier chances: 60% Common, 28% Rare, 10% Epic, 2% Legendary</p>
           <p>* Higher total power = better tier chances</p>
         </div>

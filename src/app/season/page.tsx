@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { Card } from '@/components/ui/Card';
 import { TRIBES } from '@/lib/constants';
 import { Trophy, Gift, Calendar, Target } from 'lucide-react';
+import { TribeIcon } from '@/components/ui/TribeIcon';
 
 interface SeasonData {
   currentSeason: {
@@ -130,7 +131,7 @@ export default function SeasonPage() {
 
                       {/* Tribe */}
                       <div className="flex items-center gap-3 flex-1">
-                        <span className="text-3xl">{tribe?.emoji}</span>
+                        <TribeIcon tribe={entry.tribe} size={32} />
                         <div>
                           <span className="font-black uppercase block">{tribe?.name}</span>
                           <span className="font-mono text-[10px] opacity-50">

@@ -8,6 +8,7 @@ import { PetCard } from '@/components/pet/PetCard';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { TRIBES } from '@/lib/constants';
+import { TribeIcon } from '@/components/ui/TribeIcon';
 
 interface PetData {
   id: string;
@@ -119,7 +120,7 @@ export default function TribesPage() {
               ].map((item) => (
                 <Card key={item.tribe} size="sm" padding="sm">
                   <div className="flex items-start gap-3">
-                    <span className="text-2xl">{TRIBES[item.tribe as keyof typeof TRIBES]?.emoji}</span>
+                    <TribeIcon tribe={item.tribe} size={24} />
                     <div>
                       <h3 className="font-black uppercase text-sm">{item.tribe}</h3>
                       <p className="font-mono text-[10px] opacity-70 leading-relaxed">{item.text}</p>
@@ -135,7 +136,7 @@ export default function TribesPage() {
         {selectedTribe && (
           <div>
             <h2 className="text-2xl font-black uppercase italic border-b-4 border-black pb-2 mb-6 flex items-center gap-3">
-              <span>{TRIBES[selectedTribe as keyof typeof TRIBES]?.emoji}</span>
+              <TribeIcon tribe={selectedTribe} size={28} />
               {selectedTribe} Tribe Pets
             </h2>
 
